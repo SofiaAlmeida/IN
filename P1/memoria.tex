@@ -33,8 +33,8 @@
 %%% Configuración del papel.
 % microtype: Tipografía.
 % mathpazo: Usa la fuente Palatino.
-\documentclass[a4paper, 17pt]{article}
-%\usepackage[a4paper,margin=1in,footskip=1in]{geometry}
+\documentclass[a4paper, 20pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
 \usepackage[protrusion=true,expansion=true]{microtype}
 \usepackage{mathpazo}
 
@@ -58,7 +58,7 @@
 \usepackage{graphicx} % Required for including pictures
 \usepackage{wrapfig} % Allows in-line images
 \usepackage[usenames,dvipsnames]{color} % Coloring code
-\graphicspath{{./Capturas/}}
+\graphicspath{{./img/}}
 
 %%% Matemáticas
 \usepackage{amsmath}
@@ -133,7 +133,7 @@ Subtítulo} % Subtitle
 	
 	\rule{1pt}{\textheight} % Vertical line
 	\hspace{0.05\textwidth} % Whitespace between the vertical line and title page text
-	\parbox[b]{0.75\textwidth}{ % Paragraph box for holding the title page text, adjust the width to move the title page left or right on the page
+	\parbox[b]{0.8\textwidth}{ % Paragraph box for holding the title page text, adjust the width to move the title page left or right on the page
 		
 		{\Huge\bfseries Práctica 1:\\[0.5\baselineskip] Análisis Predictivo Empresarial Mediante Clasificación}\\[2\baselineskip] % Title
 		{\large\textit{Curso 2019/2020}}\\[4\baselineskip] % Subtitle or further description
@@ -173,15 +173,34 @@ En este práctica se abordará un problema de clasificación del mundo real para
 
 El problema con el que se trabajará proviene de la plataforma ``Driven data'', usa los datos de ``Taarifa'' (API web libre que está trabajando en un poryecto de innovación en Tanzania) y del Ministerio de Agua de Tanzania. El objetivo es predecir qué bombas de agua funcionan, cuáles necesitan alguna reparación y cuáles están rotas. Es decir, estamos ante un problema de clasificación con tres clases diferentes. Se trata de predecir mediante variables como: qué tipo de bomba es, cuándo se instaló, cantidad de agua disponible,... ante qué tipo de bomba de agua nos encontramos. Saber qué puntos de agua fallarán permitirá mejorar las tareas de mantenimiento y asegurar que hay agua limpia y potable disponible para las comunidades de Tanzania.
 
-Abordaremos el problema a partir de un conjunto de datos formado por 59.400 instancias, de las cuales conocemos información sobre 39 variables, además de su clase (una de las tres ya mencionadas).
-Usando el nodo \texttt{Data Explorer} podemos hacer una exploración inicial del conjunto. En primer lugar, observamos la frecuencia de las clases: de todas las instancias 32259 son bombas de agua funcionales, 22824 no funcionales y 4317 funcionales pero necesitan una reparación. Las clases están desbalanceadas, observamos una gran diferencia en el número de ejemplos de bombas funcionales y aquellas que pese a ser funcionales requieren mantenimiento.
+Abordaremos el problema a partir de un conjunto de datos formado por 59400 instancias, de las cuales conocemos información sobre 39 variables, además de su clase (una de las tres ya mencionadas).
+%Usando el nodo \texttt{Data Explorer} podemos hacer una exploración inicial del conjunto.
+En primer lugar, usando el nodo \texttt{Pie/Donut Chart}, observamos en la Figura \ref{fig:clases1} la frecuencia de las clases: de todas las instancias 32259 son bombas de agua funcionales, 22824 no funcionales y 4317 funcionales pero necesitan una reparación.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{chart1}
+    \caption{Número de instancias de cada clase}
+    \label{fig:clases1}
+\end{figure}
+
+Las clases están desbalanceadas, observamos una gran diferencia en el número de ejemplos de bombas funcionales y aquellas que pese a ser funcionales requieren mantenimiento. En la Figura \ref{fig:clases2} podemos ver que más de la mitad de las instancias son bombas de agua funcionales (un 54\% de ellas), las no funcionales ocupan un 38\% de las instancias y las funcionales que necesitan reparación forman la clase minoritaria, con tan solo un 7\% de los ejemplos.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{chart2}
+    \caption{Porcentaje de instancias de cada clase}
+    \label{fig:clases2}
+\end{figure}
+
+Consideraremos como clase positiva ``non functional'', ya que queremos predecir cuáles son las bombas que no funcionan para poder sustituirlas.
 
 Nada más cargar el fichero observamos que es un conjunto de datos que posee valores perdidos, además de algunos valores ``unknown''. 
 
 Toda la experimentación se realizará usando una validación cruzada de 5 particiones. La semilla aleatoria empleada en aquellos algoritmos que lo requieran será: 12345.
 Los experimentos realizados en esta práctica se ejecutaron en un ordenador con sistema operativo Ubuntu 16.04 con procesador Intel(R) Core(TM) i5-2410M CPU @ 2.30GHz.
 
-Se utilizará la validación cruzada en la ejecución de todos los algoritmos, mediante los nodos \texttt{X-Partitioner} y \texttt{X-Aggregator} de KNIME. Se configuran para crear 5 particiones, luego en cada experimento se utilizará un conjunto de entrenamiento de tamaño 47520 y un conjunto de prueba formado por 11.880 instancias.
+Se utilizará la validación cruzada en la ejecución de todos los algoritmos, mediante los nodos \texttt{X-Partitioner} y \texttt{X-Aggregator} de KNIME. Se configuran para crear 5 particiones, luego en cada experimento se utilizará un conjunto de entrenamiento de tamaño 47520 y un conjunto de prueba formado por 11880 instancias.
 
 Hemos visto en clase que comparar los algoritmos solo por la precisión que consiguen en la predicción no es suficiente, ya que en conjuntos desbalanceados malos algoritmos podrían obtener una alta precisión. Así, utilizaremos medidas sensibles al desbalanceo. Se siguió el tutorial proporcionado por el profesor de prácticas sobre cómo comparar diferentes algoritmos para obtener las tablas de resultados.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -191,7 +210,7 @@ Hemos visto en clase que comparar los algoritmos solo por la precisión que cons
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%       ZeroR
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{ZeroR}
+\subsection{ZeroR}
 Para comenzar (y sin incluirlo como algoritmo a estudiar), he decidido observar el comportamiento del clasificador ZeroR. Este clasificador predice que cualquier instancia pertenecerá a la clase mayoritaria. Aunque ya sabemos que no obtendremos un buen resultado utilizando este clasificador porque solo clasificará correctamente las instancias que verdaderamente pertenezcan a la clase mayoritaria, nos servirá para tener una cota inferior de las medidas. Si en algún momento durante el desarrollo de la práctica obtuvieramos resultados peores que los obtenidos con este clasificador sospecharemos que estamos haciendo algo mal.
 
 Podemos observar el metanodo creado en KNIME para este algoritmo en la Figura \ref{fig:zeroR}. Se ha utilizado el nodo \texttt{ZeroR} de \texttt{Weka}.
@@ -203,110 +222,243 @@ Podemos observar el metanodo creado en KNIME para este algoritmo en la Figura \r
     \label{fig:zeroR}
 \end{figure}
 
-En la Tabla \ref{tab:zeroR} se encuentran las medidas de precisión obtenidas con este algoritmo. En este caso, conociendo la distribución de las clases, se podrían haber calculado manualmente sin necesidad de ejecutar el algoritmo, pues por su naturaleza el número de verdaderos positivos (TP) se corresponderá al número 
+Utilizamos un nodo \texttt{Scorer} para conocer su matriz de confusión, que encontramos en la Tabla \ref{tab:CMZeroR}, y, tal como debería, todas las instancias son clasificadas como funcionales.
 
 \begin{table}[H]
-  \label{tab:zeroR}
+  \centering
+  \caption{ZeroR - Matriz de confusión}
+  \label{tab:CMZeroR}
+  \begin{tabular}{lrrr}
+    \toprule
+    & functional & non functional & functional needs repair\\ \midrule
+    functional & 32259 & 0 & 0\\
+    non functional & 22824 & 0 & 0\\
+    functional needs repair & 4317 & 0 & 0\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+En la Tabla \ref{tab:zeroR} se encuentran las medidas de precisión obtenidas con este algoritmo. En este caso, conociendo la distribución de las clases, se podrían haber calculado manualmente sin necesidad de ejecutar el algoritmo. Sabemos que todas las instancias serán clasificadas como funcionales y nuestra clase positiva es no funcional, luego no habrá verdaderos positivos (tampoco falsos positivos).
+
+\begin{table}[H]
   \centering
   \caption{ZeroR - criterios de precisión}
+  \label{tab:zeroR}
   \begin{tabular}{lrrrrrrrrrr}
     \toprule
     & TP & FP & TN & FN & TPR & TNR & PPV & Accur. & F1-score & G-mean\\ \midrule
-    ZeroR & 32259 & 27414 & 0 & 0 & 1 & 0 & 0.543 & 0.543 & 0.704 & 0 \\
-    \bottomrule
+    ZeroR & 0 & 0 & 36576 & 22824 & 0 & 1 & ? & 0.61576 & ? & 0\\
+C4.5 - gini  & 17456 & 5016 & 31276 & 5158 & 0.77191 & 0.86179 & 0.77679 & 0.82728 & 0.77434 & 0.81561\\
+C4.5 gain & 16536 & 4730 & 31658 & 6177 & 0.72804 & 0.87001 & 0.77758 & 0.81545 & 0.752 & 0.79587\\
+
+\bottomrule
   \end{tabular}
 \end{table}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%      C4.5
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\subsection{Árbol de decisión}
 
-\subsection{C4.5}
+El primer algoritmo elegido es uno basado en árboles de decisión. Estos algoritmos parten de todos los ejemplos y van seleccionando atributos para dividir el conjunto de ejemplos en función al valor de estos atributos. Como criterio para seleccionar las variables se usa el índice Gini, así que nos encontramos con un algoritmo CART.
 
+El índice Gini mide con qué frecuencia un elemento elegido de forma aleatoria de un conjunto sería etiquetado incorrectamente si se etiqueta aleatoriamente de acuerdo a la distribución de clases en el subconjunto. Dado un conjunto de datos $T$ con ejemplos pertenecientes a $n$ clases, el índice de Gini se define como:
+\[gini(T) = 1 - \sum_{j=1}^np_j^2,\] donde $p_j$ es la frecuencia relativa de la clase $j$ en $T$. Este índice valdrá 0 cuando todos los ejemplos de un nodo sean de la misma clase.
 
+Lo ejecutaremos en KNIME mediante ... %TODO
 
-\subsection{Resultados obtenidos}
-\subsubsection{1-NN}
+Obtenemos la matriz de confusión mostrada en la Tabla \ref{tab:CMTree}.
+
 \begin{table}[H]
   \centering
-  \caption{Colposcopy}
-  \begin{tabular}{lrrrr}
+  \caption{CART - Matriz de confusión}
+  \label{tab:CMTree}
+  \begin{tabular}{lrrr}
     \toprule
-    & Tasa clasificación & Tasa reducción & Agregado & Tiempo ($\mu s$)\\ \midrule
-    Partición 1 & 74.5763 & 0 & 37.2881 & 4316 \\
-    Partición 2 & 70.1754 & 0 & 35.0877 & 3613 \\
-    Partición 3 & 73.6842 & 0 & 36.8421 & 5636 \\
-    Partición 4 & 75.4386 & 0 & 37.7193 & 3638 \\
-    Partición 5 & 82.4561 & 0 & 41.2281 & 3411 \\
-    \midrule
-    Media & 75.2661 & 0 & 37.6331 & 4122.8 \\
-    \bottomrule
-  \end{tabular}
-
-  \bigskip
-  \caption{Ionosphere}
-  \begin{tabular}{lrrrr}
-    \toprule
-    & Tasa clasificación & Tasa reducción & Agregado & Tiempo ($\mu s$)\\ \midrule
-    Partición 1 & 90.1408 & 0 & 45.0704 & 3804 \\
-    Partición 2 & 80 & 0 & 40 & 3470 \\
-    Partición 3 & 82.8571 & 0 & 41.4286 & 3319 \\
-    Partición 4 & 92.8571 & 0 & 46.4286 & 3938 \\
-    Partición 5 & 87.1429 & 0 & 43.5714 & 3443 \\
-    \midrule
-    Media & 86.5996 & 0 & 43.2998 & 3594.8 \\
-    \bottomrule
-  \end{tabular}
-
-  \bigskip
-  \caption{Texture}
-  \begin{tabular}{lrrrr}
-    \toprule
-    & Tasa clasificación & Tasa reducción & Agregado & Tiempo ($\mu s$)\\ \midrule
-    Partición 1 & 93.6364 & 0 & 46.8182 & 9351 \\
-    Partición 2 & 89.0909 & 0 & 44.5455 & 8895 \\
-    Partición 3 & 94.5455 & 0 & 47.2727 & 8251 \\
-    Partición 4 & 92.7273 & 0 & 46.3636 & 7658 \\
-    Partición 5 & 92.7273 & 0 & 46.3636 & 7524 \\
-    \midrule
-    Media & 92.5455 & 0 & 46.2727 & 8335.8 \\
+    & functional & non functional & functional needs repair\\ \midrule
+    functional & 26399 & 4265 & 1351\\
+    non functional & 4644 & 17456 & 514\\
+    funcional needs repair & 2075 & 751 & 1451\\
     \bottomrule
   \end{tabular}
 \end{table}
 
-\subsubsection{Resultados globales}
+Hemos acudido al nodo \texttt{Scorer} para obtener esta matriz y nos damos cuenta de que tiene un triángulo a modo de advertencia: ``Hay valores perdidos en la referencia o en la predicción de la clase''. Comprobamos que, efectivamente, si sumamos todos los atributos de la matriz de confusión no obtenemos el total de atributos.
+\[26399 + 4265 + 1351 + 4644 + 17456 + 514 + 2075 + 751 + 1451 = 58906 \neq 59400
+\]
+
+¿A qué se debe esto? Ya sabemos que el conjunto de datos posee bastantes valores perdidos, estos no causarán problema a la hora de crear el modelo porque cuando nos encontremos con un valor perdido y tengamos que decidir cómo clasificarlo, lo haremos usando la última clase conocida. Es posible que alguna de las clases no aparezca en el conjunto de entrenamiento (functional needs repair, por estar menos representada) y, por tanto, cuando nos encontremos con un ejemplo de este tipo al realizar el test, nuestro modelo no pueda clasificarlo. ??? Esto no puede ser por esto, estamos creando las particiones manteniendo la distribución de clases.
+
+Utilizaremos diferentes índices para poder interpretar la matriz de confusión, podemos verlos en la Tabla \ref{tab:Tree}. 
+
 \begin{table}[H]
   \centering
-  \caption{Colposcopy}
-  \begin{tabular}{lrrrr}
+  \caption{CART - criterios de precisión}
+  \label{tab:Tree}
+  \begin{tabular}{lrrrrrrrrrr}
     \toprule
-    Algoritmo & Tasa clasificación & Tasa reducción & Agregado & Tiempo ($\mu s$)\\ \midrule
-    1-NN & 75.2661 & 0 & 37.6331 & 4122.8 \\
-    RELIEF & 75.9798 & 36.4516 & 56.2157 & 12357.8 \\
-    BL & 76.2831 & 14.5161 & 45.3996 & 7.07349e+06 \\
-    \bottomrule
+    & TP & FP & TN & FN & TPR & TNR & PPV & Accur. & F1-score & G-mean\\ \midrule
+CART  & 17456 & 5016 & 31276 & 5158 & 0.77191 & 0.86179 & 0.77679 & 0.82728 & 0.77434 & 0.81561\\
+% C4.5 gain & 16536 & 4730 & 31658 & 6177 & 0.72804 & 0.87001 & 0.77758 & 0.81545 & 0.752 & 0.79587\\
+\bottomrule
   \end{tabular}
+\end{table}
 
-  \bigskip
-  \caption{Ionosphere}
-  \begin{tabular}{lrrrr}
-    \toprule
-    Algoritmo & Tasa clasificación & Tasa reducción & Agregado & Tiempo ($\mu s$)\\ \midrule
-    1-NN & 86.5996 & 0 & 43.2998 & 3594.8 \\
-    RELIEF & 87.4567 & 2.94118 & 45.199 & 10962.6 \\
-    BL & 86.0402 & 20.5882 & 53.3142 & 5.62155e+06 \\
-    \bottomrule
-  \end{tabular}
+En términos de precisión este algoritmo clasifica correctamente un 82,73\% de las instancias de la clase positiva.
 
-  \bigskip
-  \caption{Texture}
-  \begin{tabular}{lrrrr}
+La utilización de este algoritmo no precisó de ningún preprocesamiento, aceptó todos los atributos. Nos preocupamos porque no sabemos qué está pasando con las variables continuas, que los árboles de decisión no manejan bien, pero vemos en la descripción del nodo que los atributos numéricos (continuos) los dividió en dos subconjuntos a partir de su media para poder tratarlos de forma categórica.
+
+Es un algoritmo robusto, como ya se comentó, es capaz de trabajar con valores perdidos.
+
+Este modelo es fácilmente interpretable, dado un nuevo ejemplo podríamos partir del nodo raíz en el árbol obtenido y llegar a la clase con que se etiquetará siguiendo la rama del árbol correspondiente según el valor de cada atributo.
+
+% TODO Conseguir imagen del árbol
+
+% TODO medir sobreaprendizaje
+
+\subsection{k-NN}
+A la hora de clasificar nuestra máxima es la semejanza, partiendo de este criterio el algoritmo más sencillo de entender podría ser el k-NN que realizará la predicción de una instancia en función a sus k vecinos más cercanos. El cálculo de la cercanía se hará en función a la distancia, por ello hay que discretizar y normalizar los datos. No podemos trabajar con variables categóricas, ya que no están ordenadas. Tampoco podemos trabajar con los datos sin normalizar porque daríamos más importancia a los atributos que tomaran mayores valores.
+
+Comenzamos numerizando las variables. Para ello, utilizamos el nodo \texttt{Category to Number} que dada un atributo con $n$ posibles categorías, asignará un número de 0 hasta $n-1$ a cada categoría. Por motivos de cómputo, excluiremos aquellas variables que exceden el máximo de categorías (\texttt{subvillage}, \texttt{wpt\_name}). También excluimos la categoría ``class'', pues es la etiqueta que estamos tratando de asignar.
+
+A continuación, normalizamos las variables mediante el nodo \texttt{Normalizer}. Ambas operaciones las realizamos antes de la validación cruzada, para el conjunto total de instancias, si normalizaramos solo en el conjunto de entrenamiento, podríamos encontrarnos con valores fuera del rango al realizar el test. Utilizamos el nodo \texttt{K Nearest Neighbor}, que contiene el algoritmo knn tomando como número de vecinos $k = 3$. Además, añadimos un \texttt{Column Rename} para que la columna con la predicción se llame ``Prediction (class)'', como en nuestros otros nodos, en vez de ``Class [kNN]''. El flujo en KNIME es el mostrado en la Figura \ref{fig:3nn}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{3nn}
+    \caption{Metanodo 3-NN}
+    \label{fig:3nn}
+\end{figure}
+
+La advertencia en el nodo \texttt{K Nearest Neighbor} indica que las filas con valores perdidos serán ignoradas. Este algoritmo no es robusto en el sentido de que no es capaz de manejar los valores perdidos. Este aspecto se trabajará en la Sección \ref{Preprocesado} y se compararán los resultados con los actuales.
+
+A continuación, en la Tabla \ref{tab:CM3nn}, se muestra la matriz de confusión para este algoritmo.
+
+\begin{table}[H]
+  \centering
+  \caption{3-NN - Matriz de confusión}
+  \label{tab:CM3nn}
+  \begin{tabular}{lrrr}
     \toprule
-    Algoritmo & Tasa clasificación & Tasa reducción & Agregado & Tiempo ($\mu s$)\\ \midrule
-    1-NN & 92.5455 & 0 & 46.2727 & 8335.8 \\
-    RELIEF & 93.0909 & 5.5 & 49.2955 & 19242.4 \\
-    BL & 90.7273 & 22.5 & 56.6136 & 1.40398e+07 \\
+    & functional & non functional & functional needs repair\\ \midrule
+    functional & 13863 & 1687 & 479\\
+    non functional & 2454 & 7054 & 208\\
+    functional needs repair & 1131 & 362 & 520\\
     \bottomrule
   \end{tabular}
 \end{table}
+
+%% Comprobamos el número de instancias clasificadas y vemos que, como venía advirtiendo el nodo \texttt{K Nearest Neighbor}, es bastante inferior al número de instancias:
+%% \[14323 + 1396 + 521 + 2003 + 7649 + 232 + 1060 + 294 + 659 = 28137 \neq 59400.
+%% \]
+
+En la Tabla \ref{tab:3nn} se muestran los diferentes criterios de precisión para este algoritmo.
+
+\begin{table}[H]
+  \centering
+  \caption{3-NN - criterios de precisión}
+  \label{tab:3nn}
+  \begin{tabular}{lrrrrrrrrrr}
+    \toprule
+    & TP & FP & TN & FN & TPR & TNR & PPV & Accur. & F1-score & G-mean\\ \midrule
+3-NN  & 7118 & 1973 & 16069 & 2598 & 0.73261 & 0.89064 & 0.78297 & 0.83533 & 0.75695 & 0.80777\\
+\bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Red neuronal}
+
+Se ha escogido una red neuronal como siguiente algoritmo. Los algoritmos de redes neuronales se inspiran en las redes neuronales biológicas, tienen unos nodos (llamados neuronas) que se conectan con otros nodos, transmitiendo una señal que será un número real. Estas conexiones tienen un peso que se va ajustando en el proceso de aprendizaje.  
+
+En este caso también es necesario que los valores sean numéricos y estén normalizados. Además, aunque el nodo \texttt{Learner} permita ignorar los valores perdidos, si estos llegan al nodo \texttt{Predictor} obtendremos un error, luego es necesario manejar estos valores perdidos en nuestro preprocesamiento mínimo del algoritmo.
+
+Comenzamos transformando a número los datos categóricos mediante el nodo \texttt{Category to Number}. Seguidamente, los normalizamos usando el nodo \texttt{Normalize} y mediante los nodos \texttt{X-Partitioner}, \texttt{X-Aggregator} realizaremos la validación cruzada. Tenemos que tratar los valores perdidos, para ello utilizamos el nodo \texttt{Missing Value} en la rama de entrenamiento y sustituimos los valores numéricos perdidos por su media y los categóricos por el más frecuente. En la rama de test usamos el nodo \texttt{Missing Value (Apply)} que aplicará las transformaciones del nodo \texttt{Missing Value}. Así, el metanodo en KNIME correspondiente al modelado de la red neuronal queda como se ve en la Figura \ref{fig:MLP}. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{MLP}
+    \caption{Metanodo MLP}
+    \label{fig:MLP}
+\end{figure}
+
+Se utilizan los nodos \texttt{RProp MLP Learner} y \texttt{MultiLayerPerceptron Predictor} para modelar y probar este algoritmo. La red neuronal realizará un máximo de 100 iteraciones, tendrá una única capa oculta con 10 neuronas por capa.
+
+La matriz de confusión obtenida la encontramos en la Tabla \ref{tab:CMMLP}.
+
+\begin{table}[H]
+\centering
+  \caption{MLP - Matriz de confusión}
+  \label{tab:CMMLP}
+  \begin{tabular}{lrrr}
+\toprule
+    & functional & non functional & functional needs repair\\ \midrule
+    functional & 26964 & 5275 & 20\\
+    non functional & 9040 & 13773 & 11\\
+    functional needs repair & 3269 & 995 & 53\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Las diferentes medidas de precisión asociadas a este algoritmo las vemos en la Tabla \ref{tab:MLP}.
+
+\begin{table}[H]
+  \centering
+  \caption{MLP - criterios de precisión}
+  \label{tab:MLP}
+  \begin{tabular}{lrrrrrrrrrr}
+    \toprule
+    & TP & FP & TN & FN & TPR & TNR & PPV & Accur. & F1-score & G-mean\\ \midrule
+MLP & 13773 & 6270 & 30306 & 9051 & 0.60344 & 0.82858 & 0.68717 & 0.74207 & 0.64259 & 0.70711\\
+\bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Naive Bayes}
+
+El siguiente algoritmo elegido es uno basado en métodos bayesianos. Asume que los atributos son independientes y calcula la clase más probable condicionando el valor del resto de atributos.
+
+Lo utilizamos en nuestra validación cruzada mediante los nodos \texttt{Naive Bayes Learner} y \texttt{Naive Bayes Predictor}, que dejamos con sus valores por defecto. El metanodo Naive Bayes creado en KNIME para este algoritmo se presenta en la Figura \ref{fig:NaiveBayes}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{NaiveBayes}
+    \caption{Metanodo Naive Bayes}
+    \label{fig:NaiveBayes}
+\end{figure}
+
+Notamos que este algoritmo no necesita ningún preprocesamiento mínimo, trabaja tanto con variables numéricas como con variables categóricas, no es necesario que las normalicemos y aunque obtenemos una advertencia de que hay valores perdidos es capaz de obtener información sobre ellos que luego usará en el predictor.
+
+La matriz de confusión obtenida mediante el uso de este algoritmo la podemos encontrar en la Tabla \ref{tab:CMNaiveBayes}.
+
+\begin{table}[H]
+\centering
+  \caption{Naive Bayes - Matriz de confusión}
+  \label{tab:CMNaiveBayes}
+  \begin{tabular}{lrrr}
+\toprule
+    & functional & non functional & functional needs repair\\ \midrule
+    functional & 18426 & 7036 & 6797\\
+    non functional & 3699 & 16087 & 3038\\
+    functional needs repair & 648 & 800 & 2869\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Las diferentes medidas de precisión aparecen en la Tabla \ref{tab:NaiveBayes}.
+\begin{table}[H]
+  \centering
+  \caption{C4.5 - criterios de precisión}
+  \label{tab:Tree}
+  \begin{tabular}{lrrrrrrrrrr}
+    \toprule
+    & TP & FP & TN & FN & TPR & TNR & PPV & Accur. & F1-score & G-mean\\ \midrule
+Naive Bayes & 16087 & 7836 & 28740 & 6737 & 0.70483 & 0.78576 & 0.67245 & 0.75466 & 0.68826 & 0.7442\\
+\bottomrule
+  \end{tabular}
+\end{table}
+
+
 
 \section{Análisis de resultados}
 
@@ -314,7 +466,7 @@ En la Tabla \ref{tab:zeroR} se encuentran las medidas de precisión obtenidas co
 \section{Configuración de algoritmos}
 
 \section{Procesado de datos}
-
+\label{Preprocesado}
 \section{Interpretación de resultados}
 
 \section{Contenido adicional}
@@ -322,4 +474,6 @@ En la Tabla \ref{tab:zeroR} se encuentran las medidas de precisión obtenidas co
 %       REFERENCIAS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Bibliografía}
+% https://en.wikipedia.org/wiki/Decision_tree_learning#Gini_impurity
+% https://en.wikipedia.org/wiki/Confusion_matrix
 \end{document}
