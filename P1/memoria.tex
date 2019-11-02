@@ -448,20 +448,111 @@ La matriz de confusión obtenida mediante el uso de este algoritmo la podemos en
 Las diferentes medidas de precisión aparecen en la Tabla \ref{tab:NaiveBayes}.
 \begin{table}[H]
   \centering
-  \caption{C4.5 - criterios de precisión}
-  \label{tab:Tree}
+  \caption{Naive Bayes - criterios de precisión}
+  \label{tab:NaiveBayes}
   \begin{tabular}{lrrrrrrrrrr}
     \toprule
     & TP & FP & TN & FN & TPR & TNR & PPV & Accur. & F1-score & G-mean\\ \midrule
-Naive Bayes & 16087 & 7836 & 28740 & 6737 & 0.70483 & 0.78576 & 0.67245 & 0.75466 & 0.68826 & 0.7442\\
+NB & 16087 & 7836 & 28740 & 6737 & 0.70483 & 0.78576 & 0.67245 & 0.75466 & 0.68826 & 0.7442\\
 \bottomrule
   \end{tabular}
 \end{table}
 
+\subsection{Random Forest}
 
+Pasamos ahora a un multiclasificador, que combine varios clasificadores para tratar de mejorar la clasificación. Este primer multiclasificador será un ejemplo de \textit{bagging}, cada clasificador se induce independientemente. Busca mejorar algoritmos inestables, que frente a pequeños cambios en el conjunto de entrenamiento puede provocar grandes cambios en la predicción.
+
+Se ha escogido como ejemplo de \textit{bagging} el algoritmo Random Forest, que realiza distintas clasificaciones con árboles más débildes (que no consideren todas las variables, sin poda) y con diferentes subconjuntos de los datos. Para realizar el modelo utilizaremos el nodo \texttt{Random Forest Learner}, que es probado mediante el nodo \texttt{Random Forest Predictor}. 
+
+El flujo en KNIME es el que vemos en la Figura \ref{fig:RandomForest} y los nodos han sido configurados para utilizar 100 clasificadores que utilicen el índice Gini para elegir los atributos por los que ramificar el árbol. Ha sido necesario usar el nodo \texttt{Domain Calculator}, sin restringir el número de posibles valores, para que tuviera en cuenta todas las variables.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{RandomForest}
+    \caption{Metanodo Random Forest}
+    \label{fig:RandomForest}
+\end{figure}
+
+En la Tabla \ref{tab:RandomForest} observamos la matriz de confusión obtenida mediante el uso de este algoritmo.
+
+\begin{table}[H]
+\centering
+\caption{-Matriz de confusión}
+\label{tab:CMRandomForest}
+\begin{tabular}{lrrrr}
+\toprule
+ & functional & non functional & functional needs repair\\ \midrule
+functional & 29630 & 2126 & 503\\
+non functional & 5224 & 17341 & 259\\
+functional needs repair & 2484 & 548 & 1285\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+En la Tabla \ref{tab:RandomForest} se encuentran las medidas de precisión conseguidas por este algoritmo.
+
+\begin{table}[H]
+\centering
+\caption{Random Forest - Criterios de precisión}
+\label{tab:RandomForest}
+\begin{tabular}{lrrrrrrrrrr}
+\toprule
+ & TP & FP & TN & FN & TPR & TNR & PPV & Accur. & F1-score & G-mean\\ \midrule
+RF & 17341 & 2674 & 33902 & 5483 & 0.75977 & 0.92689 & 0.8664 & 0.86268 & 0.80959 & 0.83918\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Al ser un algoritmo que combina muchos árboles y estos admitir valores perdidos, Random Forest también admitirá valores perdidos. Sin embargo, la interpretabilidad de este modelo no es tan alta como lo era la de un único árbol de decisión. En el análisis compararemos este algoritmo con un único árbol de decisión.
+
+% TODO medir complejidad
+
+\subsection{Boosting}
+
+Probamos en este caso un algoritmo de \textit{boosting}, esto es, un multiclasificador en el que cada clasificador tiene en cuenta los fallos del anterior.
+
+Elegimos el nodo \texttt{XGBoosting Tree Ensemble Learner}, para realizar un modelo basado en árboles. Es necesario que numericemos las variables para no encontrarnos con problemas al predecir, así que añadimos el nodo \texttt{Category To Number} antes de realizar la partición. Vemos en la Figura \ref{fig:XGBoost} cómo quedó el flujo en KNIME necesario para ejecutar un algoritmo de \textit{boosting}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{XGBoost}
+    \caption{Metanodo XGBoost}
+    \label{fig:XGBoost}
+\end{figure}
+
+Las tasas de clasificación obtenidas con este algoritmo las podemos visualizar en la Tabla \ref{tab:CMXGB}.
+
+\begin{table}[H]
+  \centering
+  \caption{XGBoost - Matriz de confusión}
+  \label{tab:CMXGB} 
+  \begin{tabular}{lrrr}
+    \toprule
+    row ID & functional & non functional & functional needs repair\\ \midrule
+    functional & 29290 & 2533 & 436\\
+    non functional & 5438 & 17140 & 246\\
+    functional needs repair & 2506 & 624 & 1187\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Notamos que, aunque este algoritmo ha necesitado un mínimo preprocesado para admitir todas las variables del conjunto de datos, no fue necesario rellenar los valores perdidos. Comprobamos en \ref{ref:XGB} que este algoritmo soporta por defecto los valores peridos, durante el entrenamiento se trata con ellos.
+
+Las medidas de precisión obtenidas para este algoritmo son las detalladas en la Tabla \ref{tab:XGB}
+
+\begin{table}[H]
+\centering
+\caption{XGBoost - Criterios de precisión}
+\label{tab:XGB}
+\begin{tabular}{lrrrrrrrrrr}
+\toprule
+row ID & TP & FP & TN & FN & TPR & TNR & PPV & Accuracy & F1-score & G-mean\\ \midrule
+XGB & 17140 & 3157 & 33419 & 5684 & 0.75096 & 0.91369 & 0.84446 & 0.85116 & 0.79497 & 0.82834\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Análisis de resultados}
-
 
 \section{Configuración de algoritmos}
 
@@ -476,4 +567,5 @@ Naive Bayes & 16087 & 7836 & 28740 & 6737 & 0.70483 & 0.78576 & 0.67245 & 0.7546
 \section{Bibliografía}
 % https://en.wikipedia.org/wiki/Decision_tree_learning#Gini_impurity
 % https://en.wikipedia.org/wiki/Confusion_matrix
+\label{ref:XGB}%https://xgboost.readthedocs.io/en/latest/faq.html
 \end{document}
