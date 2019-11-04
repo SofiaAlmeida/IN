@@ -89,6 +89,7 @@
 \makeatletter
 \renewcommand\@biblabel[1]{\textbf{#1.}} % Change the square brackets for each bibliography item from '[1]' to '1.'
 \renewcommand{\@listI}{\itemsep=0pt} % Reduce the space between items in the itemize and enumerate environments and the bibliography
+\usepackage{hyperref}
 
 %----------------------------------------------------------------------------------------
 %	TÍTULO
@@ -184,7 +185,7 @@ En primer lugar, usando el nodo \texttt{Pie/Donut Chart}, observamos en la Figur
     \label{fig:clases1}
 \end{figure}
 
-Las clases están desbalanceadas, observamos una gran diferencia en el número de ejemplos de bombas funcionales y aquellas que pese a ser funcionales requieren mantenimiento. En la Figura \ref{fig:clases2} podemos ver que más de la mitad de las instancias son bombas de agua funcionales (un 54\% de ellas), las no funcionales ocupan un 38\% de las instancias y las funcionales que necesitan reparación forman la clase minoritaria, con tan solo un 7\% de los ejemplos.
+Las clases están desbalanceadas, observamos una gran diferencia en el número de ejemplos de bombas funcionales y aquellas que pese a ser funcionales requieren mantenimiento. En la Figura \ref{fig:clases2} podemos ver que más de la mitad de las instancias son bombas de agua funcionales (un 54\% de ellas), las no funcionales ocupan un 38\% de las instancias y las funcionales que necesitan reparación forman la clase minoritaria, con un 7\% de los ejemplos.
 
 \begin{figure}[H]
     \centering
@@ -198,11 +199,11 @@ Consideraremos como clase positiva ``non functional'', ya que queremos predecir 
 Nada más cargar el fichero observamos que es un conjunto de datos que posee valores perdidos, además de algunos valores ``unknown''. 
 
 Toda la experimentación se realizará usando una validación cruzada de 5 particiones. La semilla aleatoria empleada en aquellos algoritmos que lo requieran será: 12345.
-Los experimentos realizados en esta práctica se ejecutaron en un ordenador con sistema operativo Ubuntu 16.04 con procesador Intel(R) Core(TM) i5-2410M CPU @ 2.30GHz.
+Los experimentos realizados en esta práctica se ejecutarán en un ordenador con sistema operativo Ubuntu 16.04 con procesador Intel(R) Core(TM) i5-2410M CPU @ 2.30GHz.
 
 Se utilizará la validación cruzada en la ejecución de todos los algoritmos, mediante los nodos \texttt{X-Partitioner} y \texttt{X-Aggregator} de KNIME. Se configuran para crear 5 particiones, luego en cada experimento se utilizará un conjunto de entrenamiento de tamaño 47520 y un conjunto de prueba formado por 11880 instancias.
 
-Hemos visto en clase que comparar los algoritmos solo por la precisión que consiguen en la predicción no es suficiente, ya que en conjuntos desbalanceados malos algoritmos podrían obtener una alta precisión. Así, utilizaremos medidas sensibles al desbalanceo. Se siguió el tutorial proporcionado por el profesor de prácticas sobre cómo comparar diferentes algoritmos para obtener las tablas de resultados.
+Comparar los algoritmos solo por la precisión que consiguen en la predicción no es suficiente, ya que en conjuntos desbalanceados malos algoritmos podrían obtener una alta precisión. Así, para determinar qué algoritmo funciona mejor utilizaremos medidas sensibles al desbalanceo. Se siguió el tutorial proporcionado por el profesor de prácticas sobre cómo comparar diferentes algoritmos para obtener las tablas de resultados.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %       EXPERIMENTOS Y ANÁLISIS DE RESULTADOS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -211,7 +212,7 @@ Hemos visto en clase que comparar los algoritmos solo por la precisión que cons
 %%%%%%%       ZeroR
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{ZeroR}
-Para comenzar (y sin incluirlo como algoritmo a estudiar), he decidido observar el comportamiento del clasificador ZeroR. Este clasificador predice que cualquier instancia pertenecerá a la clase mayoritaria. Aunque ya sabemos que no obtendremos un buen resultado utilizando este clasificador porque solo clasificará correctamente las instancias que verdaderamente pertenezcan a la clase mayoritaria, nos servirá para tener una cota inferior de las medidas. Si en algún momento durante el desarrollo de la práctica obtuvieramos resultados peores que los obtenidos con este clasificador sospecharemos que estamos haciendo algo mal.
+Para comenzar (y sin incluirlo como algoritmo a estudiar), observamos el comportamiento del clasificador ZeroR. Este clasificador predice que cualquier instancia pertenecerá a la clase mayoritaria. Aunque ya sabemos que no obtendremos un buen resultado utilizando este clasificador porque solo clasificará correctamente las instancias que verdaderamente pertenezcan a la clase mayoritaria, nos servirá para tener una cota inferior de las medidas. Si en algún momento durante el desarrollo de la práctica obtuvieramos resultados peores que los obtenidos con este clasificador sospecharemos que estamos haciendo algo mal.
 
 Podemos observar el metanodo creado en KNIME para este algoritmo en la Figura \ref{fig:zeroR}. Se ha utilizado el nodo \texttt{ZeroR} de \texttt{Weka}.
 
@@ -242,17 +243,17 @@ En la Tabla \ref{tab:zeroR} se encuentran las medidas de precisión obtenidas co
 
 \begin{table}[H]
 \centering
-\caption{Criterios de precisión}
+\caption{ZeroR - Criterios de precisión}
 \label{tab:zeroR}
 \begin{tabular}{lrrrrrrrrrrr}
 \toprule
-row ID & TP & FP & TN & FN & TPR & TNR & PPV & Accur. & F1-score & G-mean & AUC\\ \midrule
+ & TP & FP & TN & FN & TPR & TNR & PPV & Accur. & F1-score & G-mean & AUC\\ \midrule
 ZeroR & 0 & 0 & 36576 & 22824 & 0.0 & 1.0 & ? & 0.6158 & ? & 0.0 & 0.5\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Nos llaman la atención los datos desconocidos. El PPV, predicciones positivas correctas entre el número total de predicciones positivas es una indeterminación, ya que el número de predicciones positivas (TP) es 0 y el total de predicciones positivas (TP + FP) también lo es. Como el F1-score es la media armónica de PPV y TPR, al no poder calcular el PPV, tampoco podremos calcular el F1-score
+Llaman la atención los datos desconocidos. El PPV, predicciones positivas correctas entre el número total de predicciones positivas es una indeterminación, ya que el número de predicciones positivas (TP) es 0 y el total de predicciones positivas (TP + FP) también lo es. Como el F1-score es la media armónica de PPV y TPR, al no poder calcular el PPV, tampoco podremos calcular el F1-score.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%      CART
@@ -265,7 +266,14 @@ El primer algoritmo elegido es uno basado en árboles de decisión. Estos algori
 El índice Gini mide con qué frecuencia un elemento elegido de forma aleatoria de un conjunto sería etiquetado incorrectamente si se etiqueta aleatoriamente de acuerdo a la distribución de clases en el subconjunto. Dado un conjunto de datos $T$ con ejemplos pertenecientes a $n$ clases, el índice de Gini se define como:
 \[gini(T) = 1 - \sum_{j=1}^np_j^2,\] donde $p_j$ es la frecuencia relativa de la clase $j$ en $T$. Este índice valdrá 0 cuando todos los ejemplos de un nodo sean de la misma clase.
 
-Lo ejecutaremos en KNIME mediante ... %TODO
+Lo ejecutaremos en KNIME mediante los nodos \texttt{Decision Tree Learner} y \texttt{Decision Tree Predictor}, tal y como se muestra en la Figura \ref{fig:Tree}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Tree}
+    \caption{Metanodo CART}
+    \label{fig:Tree}
+\end{figure}
 
 Obtenemos la matriz de confusión mostrada en la Tabla \ref{tab:CMTree}.
 
@@ -283,17 +291,17 @@ Obtenemos la matriz de confusión mostrada en la Tabla \ref{tab:CMTree}.
   \end{tabular}
 \end{table}
 
-Hemos acudido al nodo \texttt{Scorer} para obtener esta matriz y nos damos cuenta de que tiene un triángulo a modo de advertencia: ``Hay valores perdidos en la referencia o en la predicción de la clase''. Comprobamos que, efectivamente, si sumamos todos los atributos de la matriz de confusión no obtenemos el número total de atributos.
-\[26399 + 4265 + 1351 + 4644 + 17456 + 514 + 2075 + 751 + 1451 = 58906 \neq 59400
-\]
+%% Hemos acudido al nodo \texttt{Scorer} para obtener esta matriz y nos damos cuenta de que tiene un triángulo a modo de advertencia: ``Hay valores perdidos en la referencia o en la predicción de la clase''. Comprobamos que, efectivamente, si sumamos todos los atributos de la matriz de confusión no obtenemos el número total de atributos.
+%% \[26399 + 4265 + 1351 + 4644 + 17456 + 514 + 2075 + 751 + 1451 = 58906 \neq 59400
+%% \]
 
-¿A qué se debe esto? Ya sabemos que el conjunto de datos posee bastantes valores perdidos, estos no causarán problema a la hora de crear el modelo porque cuando nos encontremos con un valor perdido y tengamos que decidir cómo clasificarlo, lo haremos usando la última clase conocida. Es posible que alguna de las clases no aparezca en el conjunto de entrenamiento (functional needs repair, por estar menos representada) y, por tanto, cuando nos encontremos con un ejemplo de este tipo al realizar el test, nuestro modelo no pueda clasificarlo. ??? Esto no puede ser por esto, estamos creando las particiones manteniendo la distribución de clases.
+%% ¿A qué se debe esto? Ya sabemos que el conjunto de datos posee bastantes valores perdidos, estos no causarán problema a la hora de crear el modelo porque cuando nos encontremos con un valor perdido y tengamos que decidir cómo clasificarlo, lo haremos usando la última clase conocida. Es posible que alguna de las clases no aparezca en el conjunto de entrenamiento (functional needs repair, por estar menos representada) y, por tanto, cuando nos encontremos con un ejemplo de este tipo al realizar el test, nuestro modelo no pueda clasificarlo. ??? Esto no puede ser por esto, estamos creando las particiones manteniendo la distribución de clases.
 
 Utilizaremos diferentes índices para poder interpretar la matriz de confusión, podemos verlos en la Tabla \ref{tab:Tree}. 
 
 \begin{table}[H]
 \centering
-\caption{Criterios de precisión}
+\caption{CART - Criterios de precisión}
 \label{tab:Tree}
 \begin{tabular}{lrrrrrrrrrrr}
 \toprule
@@ -314,9 +322,9 @@ Este modelo es fácilmente interpretable, dado un nuevo ejemplo podríamos parti
 % TODO medir sobreaprendizaje
 
 \subsection{k-NN}
-A la hora de clasificar nuestra máxima es la semejanza, partiendo de este criterio el algoritmo más sencillo de entender podría ser el k-NN que realizará la predicción de una instancia en función a sus k vecinos más cercanos. El cálculo de la cercanía se hará en función a la distancia de los distintos atributos, por ello hay que discretizar y normalizar los datos. No podemos trabajar con variables categóricas, ya que no sabríamos medir la distancia euclídea de una palabra a otra. Tampoco podemos trabajar con los datos sin normalizar porque daríamos más importancia a los atributos que tomaran mayores valores.
+Cuando clasificamos primamos la semejanza, partiendo de este criterio el algoritmo más sencillo de entender podría ser el k-NN que realizará la predicción de una instancia en función a sus k vecinos más cercanos. El cálculo de la cercanía se hará en función a la distancia euclídea de los distintos atributos, por ello hay que discretizar y normalizar los datos. No podemos trabajar con variables categóricas, ya que no sabríamos medir la distancia euclídea de una palabra a otra. Tampoco podemos trabajar con los datos sin normalizar porque daríamos más importancia a los atributos que tomaran mayores valores.
 
-Comenzamos numerizando las variables. Para ello, utilizamos el nodo \texttt{Category to Number} que dada un atributo con $n$ posibles categorías, asignará un número de 0 hasta $n-1$ a cada categoría. Excluimos la categoría ``class'', pues es la etiqueta que estamos tratando de asignar, aumentamos el número máximo de categorías (el que viene por defecto no sirve para nuestros datos).
+Comenzamos numerizando las variables. Para ello, utilizamos el nodo \texttt{Category to Number} que dado un atributo con $n$ posibles categorías, asignará un número de 0 hasta $n-1$ a cada categoría. Excluimos la categoría ``class'', pues es la etiqueta que estamos tratando de asignar, aumentamos el número máximo de categorías (el que viene por defecto no sirve para nuestros datos).
 
 A continuación, normalizamos las variables mediante el nodo \texttt{Normalizer}. Ambas operaciones las realizamos antes de la validación cruzada, para el conjunto total de instancias, si normalizaramos solo en el conjunto de entrenamiento, podríamos encontrarnos con valores fuera del rango al realizar el test. Antes de llamar al algoritmo, tenemos que tratar los valores perdidos, en caso contrario, ignorará aquellas filas que los contengan y tendremos problemas en la predicción. Aplicando el nodo \texttt{Missing Value} asignando a los valores numéricos su mediana y a los nominales el más frecuente, sobre el conjunto de entrenamiento (para no utilizar información propia del conjunto de prueba al realizar el modelo). Sobre el conjunto de test aplicamos el nodo \texttt{Missing Value (Apply)}, para que trate los valores perdidos de la forma que se hiciera sobre el conjunto de entrenamiento. Utilizamos el nodo \texttt{K Nearest Neighbor}, que contiene el algoritmo knn tomando como número de vecinos $k = 3$. Además, añadimos un \texttt{Column Rename} para que la columna con la predicción se llame ``Prediction (class)'', como en nuestros otros nodos, en vez de ``Class [kNN]''. El flujo en KNIME es el mostrado en la Figura \ref{fig:3nn}.
 
@@ -475,7 +483,7 @@ En la Tabla \ref{tab:RandomForest} observamos la matriz de confusión obtenida m
 
 \begin{table}[H]
 \centering
-\caption{-Matriz de confusión}
+\caption{RandomForest - Matriz de confusión}
 \label{tab:CMRandomForest}
 \begin{tabular}{lrrrr}
 \toprule
@@ -742,7 +750,7 @@ En el algoritmo de boosting elegido se puede modificar el número de iteraciones
 \begin{table}[H]
 \centering
 \caption{XGBoost nº iteraciones - Criterios de precisión}
-\label{tab:}
+\label{tab:xgbmod}
 \begin{tabular}{lrrrrrrrrrrr}
 \toprule
  & TP & FP & TN & FN & TPR & TNR & PPV & Accur. & F1-score & G-mean & AUC\\ \midrule
@@ -760,15 +768,227 @@ El incremento en el número de verdaderos positivos se crea mediante una disminu
 
 \section{Procesado de datos}
 \label{Preprocesado}
+Realizaremos un preprocesado que nos sirva para todos los algoritmos.
+Comenzamos observando los atributos, gracias al nodo \texttt{Data Explorer} y su vista interactiva.
+
+Destacaba en nuestro conjunto de datos la cantidad de valores perdidos. Para tratar este problema se comienza estudiando los atributos. Observaremos cuántas instancias con valores perdidos tiene una variable, si supera un tercio del total de instancias, es decir, si hay más de 19800 valores perdidos en un atributo, eliminaremos dicho atributo, considerando que la información que aporta no es suficiente. No solo atenderemos a ``No missings'', en algunas variables numéricas el valor 0 podría haber sido utilizado para sustituir los valores perdidos, así como unknown en las categóricas.
+
+Empezaremos realizando un estudio de las variables, para determinar si podemos eliminar alguna de forma justificada. Se comentan aquellas que tienen algún interés.
+
+Comenzamos estudiando las variables numéricas:
+\begin{itemize}
+\item \texttt{num\_private} es un atributo que vale 0 para 58643 variables, considerando que el valor significa que el valor real se ha perdido y dada la alta cantidad de instancias con este atributo a 0, eliminaremos esta variable en nuestro preprocesado de los datos.
+\item Como vemos en la Figura \ref{fig:histCY} \texttt{construction\_year} presenta 20709 valores entre el -50 y 250 (observando la información que nos muestra la vista interactiva, todos estos valores corresponden a 0). Como se está hablando del año de construcción de la bomba de agua se determina que estos valores corresponden a valores desconocidos, como superan el umbral de un tercio que habíamos impuesto, eliminaremos esta variable.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{histogramaCY}
+    \caption{Histograma del atributo \texttt{construction\_year}}
+    \label{fig:histCY}
+\end{figure}
+
+Pasamos ahora a analizar las variables categóricas:
+\begin{itemize}
+\item \texttt{date\_recorded} tiene muchos posibles valores y no tiene interés ya que es la fecha en que se almacenó la instancia en el conjunto de datos, no aporta información propia sobre la bomba de agua, la eliminamos.
+\item En \texttt{funder}, \texttt{installer} y \texttt{ward} tenemos un problema similar, al tener tantos posibles valores, no podemos obtener información sobre ellos, ni utilizando el nodo \texttt{Domain Calculator} podemos obtener sus histogramas, se decide mantenerlas de momento.
+\item \texttt{wpt\_name} presenta el problema anterior: demasiadas opciones para este atributo. Sin embargo, sabemos que esta variable representa el nombre de la bomba de agua, que idealmente será único para cada una y no repercutirá en su funcionamiento, la eliminamos para evitar el cómputo que supone.
+\item \texttt{scheme\_name} representa quién gestiona la bomba de agua, como el número de valores perdidos de este atributo es de 28174, decidimos eliminarlo por no aportar información suficiente. 
+\item \texttt{recorded\_by} representa quién incluyó la instancia en el conjunto de datos, pero presenta un único valor: GeoData Consultants Ltd, optamos por eliminarlo porque no aporta información específica de la bomba de agua.
+\end{itemize}
+
+Sobre los atributos restantes calcularemos la matriz de correlación lineal, que podemos encontrar en la Figura \ref{fig:CorrMat}, para determinar las parejas de variables que estén linealmente correladas y así quedarnos con solo una de las de la pareja, pues la otra no aporta información nueva.
+
+%TODO actualizar esta matriz
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{CorrelationMatrix}
+    \caption{Matriz de correlación}
+    \label{fig:CorrMat}
+\end{figure}
+
+Esta matriz, que podemos consultar en el modo de vista interactivo en KNIME, contiene en la posición i,j-ésima un coeficiente de correlación o una cruz. La cruz significa que no se pudo calcular el coeficiente por ser las variables de diferente tipo: una numérica y otra nominal. Buscamos las parejas que tengan coeficiente 1 (están linealmente correladas) y nos quedamos con las variables más generales:
+\begin{itemize}
+\item \texttt{waterpoint\_type} - \texttt{waterpoint\_type\_group} ambas representan el tipo de punto de agua, nos quedamos con \texttt{waterpoint\_type\_group}.
+  
+\item \texttt{source} - \texttt{source\_type} - \texttt{source\_class}, todas representan la fuente del agua, elegimos \texttt{source\_class} para seguir con nuesto preprocesado.
+  
+\item \texttt{quantity} - \texttt{quantity\_group} expresan la cantidad de agua, elegimos \texttt{quantity\_group} para mantenerla.
+  
+\item \texttt{quality\_group} - \texttt{water\_quality} simbolizan la calidad del agua, nos quedamos con \texttt{quality\_group}.
+
+\item \texttt{payment} - \texttt{payment\_type} indican cuánto cuesta el agua, eliminamos \texttt{payment} del conjunto de datos con el que trabajaremos.
+
+\item \texttt{management} - \texttt{management\_group} muestran cómo se realiza la gestión de la bomba de agua, excluimos \texttt{management} de los atributos a considerar.
+
+\item \texttt{extraction\_type} - \texttt{extraction\_type\_class} - \texttt{extraction\_type\_group} señalan todas el tipo de extracción que usa la bomba de agua, nos quedamos con \texttt{extraction\_type\_class}.
+
+  \item \texttt{lga} - \texttt{region} ambas aportan información sobre la localización geográfica de la bomba de agua, eliminamos \texttt{lga}.
+\end{itemize}
+
+Por último, eliminamos también la variable \texttt{ward} que representa la localización geográfica y está fuertemente correlada con \texttt{region} (0.9855) y con \texttt{basin} (0.9691).
+
+Nuestro conjunto de datos tiene ahora 23 atributos, 7 de los cuales son numéricos y 15 nominales. Seguimos teniendo algunas variables que presentan valores perdidos, así que realizaremos un prerpocesamiento mínimo sobre ellos en los algoritmos que no había sido necesario hacerlo (porque podían trabajar con ellos) bajo el criterio de que es mejor hacer un mal preprocesamiento a ignorar por completo esa instancia. Un ejemplo son los árboles de decisión, vemos en la Figura \ref{fig:CART} cómo queda el flujo en KNIME tras esta modificación.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{CART}
+    \caption{Metanodo CART de Algoritmos preprocesados}
+    \label{fig:CART}
+\end{figure}
+
+Por otro lado, en los algoritmos en los que es necesario numerizar (k-NN, MLP y XGBoost) se asognó un número a cada categoría, con el consiguiente problema de que se induce un orden sobre unas variables que previamente no estaban ordenadas. Para paliar este problema se binarizará aquellas variables que tengan pocas categorías (menos de 30), binarizar todas las variables no sería factible porque el conjunto de datos podría crecer mucho, sobre todo si tenemos en cuenta que hay variables que toman en torno a 1000 categorías. Binarizaremos las variables: \texttt{basin}, \texttt{region}, \texttt{public\_meeting}, \texttt{scheme\_management}, \texttt{permit}, \texttt{extraction\_type\_class}, \texttt{management\_group}, \texttt{payment\_type}, \texttt{quality\_group}, \texttt{quantity\_group}, \texttt{source} y \texttt{waterpoint\_type\_group}. Para realizar la binarización usamos el nodo \texttt{One to Many}. Así, el flujo en KNIME para estos algoritmos quedará como vemos en la Figura \ref{fig:knnotm} en el que se ve el ejemplo del 3-NN.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{knnotm}
+    \caption{Metanodo 3-NN de algoritmos preprocesados}
+    \label{fig:knnotm}
+\end{figure}
+
+Tras este preprocesado se vuelven a ejecutar todos los algoritmos en KNIME y se obtienen sus criterios de presición. Para comparar mejor el rendimiento de los algoritmos con preprocesado y sin preprocesado, se juntan en la Tabla \ref{tab:preprocesado} los resultados globales que teníamos en la Tabla \ref{tab:global} con los recién obtenidos (excepto para redes neuronales y XGBoost, que se han usado los mejorados). Añadimos una 'P' antes del nombre del algoritmo para indicar que es el preprocesado.
+
+\begin{table}[H]
+\centering
+\caption{Criterios de precisión sin y con preprocesado}
+\label{tab:preprocesado}
+\begin{tabular}{lrrrrrrrrrrr}
+\toprule
+ & TP & FP & TN & FN & TPR & TNR & PPV & Accur. & F1-score & G-mean & AUC\\ \midrule
+ZeroR & 0 & 0 & 36576 & 22824 & 0.0 & 1.0 & ? & 0.6158 & ? & 0.0 & 0.5\\
+P-ZeroR & 0 & 0 & 36576 & 22824 & 0.0 & 1.0 & ? & 0.6158 & ? & 0.0 & 0.5\\
+CART & 17456 & 5016 & 31276 & 5158 & 0.7719 & 0.8618 & 0.7768 & 0.8273 & 0.7743 & 0.8156 & 0.8384\\
+P-CART & 17378 & 5199 & 31138 & 5283 & 0.7669 & 0.8569 & 0.7697 & 0.8223 & 0.7683 & 0.8106 & 0.8363\\
+3NN & 15925 & 5125 & 31451 & 6899 & 0.6977 & 0.8599 & 0.7565 & 0.7976 & 0.7259 & 0.7746 & 0.8408\\
+P-3NN & 16747 & 4513 & 32063 & 6077 & 0.7337 & 0.8766 & 0.7877 & 0.8217 & 0.7598 & 0.802 & 0.8634\\
+MLP-3c25nc & 13544 & 4547 & 32029 & 9280 & 0.5934 & 0.8757 & 0.7487 & 0.7672 & 0.6621 & 0.7209 & 0.8136\\
+P-MLP3c25nc & 15823 & 3818 & 32758 & 7001 & 0.6933 & 0.8956 & 0.8056 & 0.8179 & 0.7452 & 0.788 & 0.8737\\
+NB & 16087 & 7836 & 28740 & 6737 & 0.7048 & 0.7858 & 0.6724 & 0.7547 & 0.6883 & 0.7442 & 0.8258\\
+P-NB & 17323 & 11252 & 25324 & 5501 & 0.759 & 0.6924 & 0.6062 & 0.718 & 0.6741 & 0.7249 & 0.8123\\
+RF & 17341 & 2674 & 33902 & 5483 & 0.7598 & 0.9269 & 0.8664 & 0.8627 & 0.8096 & 0.8392 & 0.9243\\
+P-RF & 17103 & 2726 & 33850 & 5721 & 0.7493 & 0.9255 & 0.8625 & 0.8578 & 0.802 & 0.8328 & 0.9186\\
+XGB-150 & 17405 & 3206 & 33370 & 5419 & 0.7626 & 0.9123 & 0.8445 & 0.8548 & 0.8014 & 0.8341 & 0.9215\\
+P-XGB150 & 16990 & 3104 & 33472 & 5834 & 0.7444 & 0.9151 & 0.8455 & 0.8495 & 0.7917 & 0.8254 & 0.9149\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Observamos que el procesado probado no ha tenido el mismo resultado en todos los algoritmos. ZeroR se mantiene igual, ya que no hemos variado cuál es la clase mayoritaria. Algunos algoritmos empeoran sus resultados, los basados en árboles y Naive Bayes, esto tiene su causa en que a la hora de eliminar variables quitamos alguna que era importante a la hora de distinguir las clases, luego con las restantes la clasificación es peor. Destaca que en Naive Bayes al eliminar las variables correladas (y con ello la dependencia entre las variables) el algoritmo obtiene peores resultados, ya que se pensaba que al ser las variables independientes, como el algoritmo supone, funcionaría mejor. Pero hay otros algoritmos que mejoran, estos son el 3-NN y la red neuronal considerada. La eliminación de variables que presentaban muchos valores perdidos (con los que estos algoritmos no trabajan bien) y la binarización de variables categóricas han beneficiado a estos algoritmos que logran igualarse un poco más en cuanto a índices de precisión a los multiclasificadores.
+
 \section{Interpretación de resultados}
 
-\section{Contenido adicional}
+Tras el procesado, nos damos cuenta de que el criterio elegido a la hora de eliminar variables no fue el mejor. Nos disponemos ahora a comprobar qué variables fueron determinantes para crear el modelo de clasificación en el caso sin procesar y en el procesado con la intención de determinar dónde nos equivocamos.
+
+Comenzamos con el algoritmo de árbol de decisión CART. En la Figura \ref{fig:CART1} observamos que la primera división del conjunto es en función al valor de la característica \texttt{quantity\_group}, esta variable se mantuvo en la selección de atributos, así que debería ser también determinante cuando ejecutemos el mismo algoritmo sobre los datos ya procesados.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{CART1}
+    \caption{Primera división de CART}
+    \label{fig:CART1}
+\end{figure}
+
+La Figura \ref{fig:CART1} se consiguió mediante el uso del nodo \texttt{Decision Tree To Image}. Utilizando el mismo nodo en el algoritmo ya procesado se verifica que, efectivamente, la variable que nos permite realizar mejor la división de las instancias es \texttt{quantity\_group}.
+
+En este aspecto puede ser más interesante ver los resultados obtenidos con RandomForest sobre el uso de cada atributo para hacer la división, ya que al trabajar con más árboles podemos observar distintas opciones. En la Tabla \ref{tab:RFatrib} se recoge el número de veces que cada atributo ha sido utilizado para realizar la división del conjunto de ejemplos en los tres primeros niveles.
+
+\begin{table}[H]
+\centering
+\caption{Atributos seleccionados para la división - RandomForest}
+\label{tab:RFatrib}
+\begin{tabular}{lrrrrrr}
+\toprule
+Atributo & Div. (niv. 0) & Div. (niv. 1) & Div. (niv. 2) \\ \midrule
+amount\_tsh & 5 & 8 & 9 \\
+date\_recorded & 0 & 0 & 0 \\
+funder & 0 & 0 & 0 \\
+gps\_height & 0 & 0 & 3 \\
+installer & 0 & 0 & 0 \\
+longitude & 0 & 2 & 16 \\
+latitude & 0 & 5 & 14 \\
+wpt\_name & 0 & 0 & 0 \\
+num\_private & 0 & 0 & 0 \\
+basin & 0 & 4 & 10 \\
+subvillage & 0 & 0 & 0 \\
+region & 3 & 9 & 21 \\
+region\_code & 0 & 1 & 4 \\
+district\_code & 0 & 0 & 1 \\
+lga & 5 & 12 & 15 \\
+ward & 0 & 0 & 0 \\
+population & 1 & 0 & 2 \\
+public\_meeting & 0 & 0 & 5 \\
+recorded\_by & 0 & 0 & 0 \\
+scheme\_management & 0 & 4 & 11 \\
+scheme\_name & 0 & 0 & 0 \\
+permit & 0 & 0 & 4 \\
+construction\_year & 2 & 3 & 20 \\
+extraction\_type & 11 & 14 & 19 \\
+extraction\_type\_group & 5 & 11 & 17 \\
+extraction\_type\_class & 4 & 7 & 21 \\
+management & 0 & 5 & 19 \\
+management\_group & 0 & 5 & 4 \\
+payment & 3 & 18 & 19 \\
+payment\_type & 1 & 12 & 18 \\
+water\_quality & 1 & 1 & 6 \\
+quality\_group & 1 & 2 & 4 \\
+quantity & 10 & 18 & 28 \\
+quantity\_group & 22 & 17 & 36 \\
+source & 1 & 14 & 12 \\
+source\_type & 0 & 3 & 9 \\
+source\_class & 0 & 3 & 6 \\
+waterpoint\_type & 14 & 15 & 28 \\
+waterpoint\_type\_group & 11 & 7 & 18 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Vemos que la variable más usada en primer lugar es \texttt{quantity\_group}, seguida de \texttt{extraction\_type} (que forma parte de las variables eliminadas).  En la Tabla \ref{tab:RFatrib2} se lista la misma información para el uso de RandomForest sobre el conjunto de datos procesados.
+
+\begin{table}[H]
+\centering
+\caption{Atributos seleccionados para la división - RandomForest preprocesado}
+\label{tab:RFatrib2}
+\begin{tabular}{lrrrrrr}
+\toprule
+ & Div. (niv. 0) & Div.(niv. 1) & Div. (niv. 2) \\ \midrule
+amount\_tsh & 9 & 18 & 12 \\
+funder & 0 & 0 & 0 \\
+gps\_height & 1 & 1 & 10 \\
+installer & 0 & 0 & 0 \\
+longitude & 2 & 6 & 16 \\
+latitude & 0 & 5 & 22 \\
+basin & 2 & 12 & 29 \\
+subvillage & 0 & 0 & 0 \\
+region & 7 & 18 & 43 \\
+region\_code & 1 & 1 & 16 \\
+district\_code & 2 & 2 & 14 \\
+population & 1 & 0 & 12 \\
+public\_meeting & 0 & 5 & 3 \\
+scheme\_management & 5 & 8 & 18 \\
+permit & 0 & 0 & 3 \\
+extraction\_type\_class & 10 & 32 & 39 \\
+management\_group & 1 & 7 & 12 \\
+payment\_type & 12 & 9 & 20 \\
+quality\_group & 8 & 10 & 13 \\
+quantity\_group & 20 & 27 & 60 \\
+source & 4 & 16 & 23 \\
+waterpoint\_type\_group & 15 & 23 & 35 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Aunque las variables más seleccionadas no coincidan, sí que se eligen las que están correladas.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %       REFERENCIAS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Bibliografía}
-% https://en.wikipedia.org/wiki/Decision_tree_learning#Gini_impurity
-% https://en.wikipedia.org/wiki/Confusion_matrix
-\label{ref:XGB}%https://xgboost.readthedocs.io/en/latest/faq.html
-% https://plotdb.com/
+\begin{itemize}
+\item \url{https://en.wikipedia.org/wiki/Decision_tree_learning#Gini_impurity}
+\item \url{https://en.wikipedia.org/wiki/Confusion_matrix}
+\item \url{https://xgboost.readthedocs.io/en/latest/faq.html}\label{ref:XGB}
+  \item \url{https://plotdb.com/}
+\end{itemize}
+
 \end{document}
