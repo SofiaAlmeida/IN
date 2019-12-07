@@ -78,11 +78,7 @@ for col in censo:
 
 
 #seleccionar casos
-   # Una forma de hacer filtros es esta:
-   # .loc[condiciones]
-   # subset = censo.loc[(censo['EDAD']>20) & (censo['EDAD']<=40) & (censo['COD_CCAA']==1)]
-   #subset = censo.loc[(censo['EMBANT'] == 1) & (censo['TRAREPRO'] == 1)]
-   subset = censo.loc[(censo['MAMPRIMHIJO'] >= 30)]
+subset = censo.loc[(censo['MAMPRIMHIJO'] >= 30)]
    
 print("Subconjunto formado por " + str(len(subset)) + " objetos")
 # seleccionar variables de interés para clustering

@@ -7,8 +7,7 @@ Basada en el código proporcionado por:
 Fecha:
     Noviembre/2019
 Contenido:
-    Caso de estudio 1: mujeres que tuvieron el primer hijo con 30 años o más
-"""
+    Caso de estudio 2"""
 import time
 
 import matplotlib.pyplot as plt
@@ -38,8 +37,8 @@ def tabla_alg(l):
     # Cabecera de la tabla
     print("\\begin{table}[H]")
     print("\centering")
-    print("\caption{Resultados caso de estudio 1}")
-    print("\label{tab:algorithms1}")
+    print("\caption{Resultados caso de estudio 2}")
+    print("\label{tab:algorithms2}")
     print("\\begin{tabular}{lrrrr}")
     print("\\toprule")
     print("Algoritmo & Tiempo ($s$) & Calinski-Harabasz & Silhouette & Número de clusters\\\\")
@@ -71,10 +70,30 @@ def tam_clusters(clusters, show=False):
     fig, ax = plt.subplots()
     ax.bar(num_clus, tams, align='center', alpha=0.5)
     ax.set(xlabel='Número de cluster', ylabel='Número de elementos')
-    fig.savefig("./fig/caso1/"+ name + '_tam_clusters.png', transparent=False, dpi=80, bbox_inches="tight")
+    fig.savefig("./fig/caso2/"+ name + '_tam_clusters.png', transparent=False, dpi=80, bbox_inches="tight")
     if show:
         plt.show()
 
+def bar_graph(data, etiq, show=False):   
+    nums = []
+    tams = []
+    # Cuántos objetos caen en cada cluster
+    print("Tamaño de " + etiq)
+    size=data[etiq].value_counts()
+    for num,i in size.iteritems():
+        print('%s: %5d (%5.2f%%)' % (num,i,100*i/len(data)))
+        nums.append(num)
+        tams.append(i)
+        
+    sns.set()
+    plt.rcParams.update({'figure.autolayout': True})
+    fig, ax = plt.subplots()
+    ax.bar(nums, tams, align='center', alpha=0.5)
+    ax.set(xlabel='Valor de ' + etiq, ylabel='Número de elementos')
+    fig.savefig("./fig/caso2/"+ etiq + '_tam.png', transparent=False, dpi=80, bbox_inches="tight")
+    if show:
+        plt.show()
+        
 # Heatmap        
 def heatmap(centers, show=False):
     print("---------- Preparando el heatmap...")
@@ -84,14 +103,14 @@ def heatmap(centers, show=False):
     for var in list(centers):
         centers_desnormal[var] = X[var].min() + centers[var] * (X[var].max() - X[var].min())
 
-    sns.set()
+    sns.set(font_scale=2)
     # Creamos el mapa de temperatura
     ax = sns.heatmap(centers, cmap="YlGnBu", annot=centers_desnormal, fmt='.3f')
     ax.set(xlabel='Variables', ylabel='Número de cluster')
     bottom, top = ax.get_ylim()
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
     ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-    plt.savefig("./fig/caso1/" + name + "_heatmap.png")
+    plt.savefig("./fig/caso2/" + name + "_heatmap.png")
     if show:
         plt.show()
     plt.clf() 
@@ -107,7 +126,7 @@ def scatter_matrix(X_alg, show=False):
     variables.remove('cluster')
     sns_plot = sns.pairplot(X_alg, vars=variables, hue="cluster", palette='Paired', plot_kws={"s": 25}, diag_kind="hist") 
     plt.subplots_adjust(wspace=.03, hspace=.03)
-    plt.savefig("./fig/caso1/" + name + "_scattermatrix.png")
+    plt.savefig("./fig/caso2/" + name + "_scattermatrix.png")
     if show:
         plt.show()
     plt.clf()
@@ -115,8 +134,8 @@ def scatter_matrix(X_alg, show=False):
     #'''
 
 # Distribución
-def kdeplot(X, name, k, usadas, show=False):
-    print("\nGenerando kplot..." + name)
+def distplot(X, name, k, usadas, show=False):
+    print("\nGenerando distplot..." + name)
     n_var = len(usadas)
 
     sns.set()
@@ -132,12 +151,13 @@ def kdeplot(X, name, k, usadas, show=False):
     for i in range(k):
         dat_filt = X_alg.loc[X_alg['cluster']==i]
         for j in range(n_var):
-            ax = sns.kdeplot(dat_filt[usadas[j]], shade = True, color = colors[i], label = "", ax = axes[i,j])
+            ax = sns.distplot(dat_filt[usadas[j]], 
+color = colors[i], label = "", ax = axes[i,j])
             if (i==k-1):
                 axes[i,j].set_xlabel(usadas[j])
             else:
                 axes[i,j].set_xlabel("")
-       
+        
             if (j==0):
                 axes[i,j].set_ylabel("Cluster "+str(i))
             else:
@@ -149,7 +169,7 @@ def kdeplot(X, name, k, usadas, show=False):
        
             ax.set_xlim(rango[j][0]-0.05*(rango[j][1]-rango[j][0]), rango[j][1]+0.05*(rango[j][1]-rango[j][0]))
             
-    plt.savefig("./fig/caso1/" + name + "_kdeplot.png")
+    plt.savefig("./fig/caso2/" + name + "_distplot.png")
     if show:
         plt.show()
     
@@ -192,7 +212,7 @@ def boxplot(X, name, k, usadas, show=False):
             axes[i,j].grid(axis='y', b=False)
             ax.set_xlim(rango[j][0]-0.05*(rango[j][1]-rango[j][0]), rango[j][1]+0.05*(rango[j][1]-rango[j][0]))
 
-    fig.savefig("./fig/caso1/" + name + "_boxplot.png")
+    fig.savefig("./fig/caso2/" + name + "_boxplot.png")
     if show:
         plt.show()
     plt.clf()
@@ -205,18 +225,21 @@ censo = pd.read_csv('mujeres_fecundidad_INE_2018.csv')
 
 # Imputaremos los valores perdidos con la media
 prueba = pd.DataFrame(censo)
-print("Edad media a la que se tiene el primer hijo: ", prueba['MAMPRIMHIJO'].mean())   
+
+
+#bar_graph(censo, 'M_NOHIJOS1')
 
 for col in censo:
    censo[col].fillna(censo[col].mean(), inplace=True)
 
-
 #seleccionar casos
-subset = censo.loc[(censo['MAMPRIMHIJO'] >= 30)]
+subset = censo.loc[(censo['DESEOHIJOS'] == 6)]
+   
+   
    
 print("Subconjunto formado por " + str(len(subset)) + " objetos")
 # seleccionar variables de interés para clustering
-usadas = ['ANOVI', 'ANORELACION', 'ANOTRABACT', 'EDADIDEAL']
+usadas = ['EDAD', 'SATISFACEVI', 'EDADIDEAL', 'ESTUDIOSA']
 X = subset[usadas] # Columnas que voy a estudiar
 
 #Normalizamos
@@ -313,9 +336,9 @@ for name, alg in algorithms:
         except:
           print("------ERROR: No se pudo crear el scatter matrix------")
         try:
-            kdeplot(X_alg, name, n_clusters_, usadas)
+            distplot(X_alg, name, n_clusters_, usadas)
         except:
-            print("------ERROR: No se pudo crear el kdeplot-----")
+            print("------ERROR: No se pudo crear el distplot-----")
         try:
             boxplot(X_alg, name, n_clusters_, usadas)
         except:
@@ -352,11 +375,11 @@ plt.figure(1)
 plt.clf()
 dendro = hierarchy.dendrogram(linkage_array,orientation='left') #lo pongo en horizontal para compararlo con el generado por seaborn
 #puedo usar, por ejemplo, "p=10,truncate_mode='lastp'" para cortar el dendrograma en 10 hojas
-plt.savefig("./fig/caso1/Ward_dendrograma.png")
+plt.savefig("./fig/caso2/Ward_dendrograma.png")
 
 
 X_filtrado_normal_DF = pd.DataFrame(X_filtrado_normal,index=X_filtrado.index,columns=usadas)
 sns.set()
 sns_dendro = sns.clustermap(X_filtrado_normal_DF, method='ward', col_cluster=False, figsize=(20,10), cmap="YlGnBu", yticklabels=False)
 
-sns_dendro.savefig("./fig/caso1/Ward_dendro_heat.png")
+sns_dendro.savefig("./fig/caso2/Ward_dendro_heat.png")
