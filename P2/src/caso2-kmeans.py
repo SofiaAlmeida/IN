@@ -33,7 +33,7 @@ def tabla_alg(l):
     print("\\begin{table}[H]")
     print("\centering")
     print("\caption{Resultados cambio de parámetros KMeans}")
-    print("\label{tab:param_kmeans1}")
+    print("\label{tab:param_kmeans2}")
     print("\\begin{tabular}{lrrrr}")
     print("\\toprule")
     print("Número de clusters & Tiempo ($s$) & Calinski-Harabasz & Silhouette &\\\\")
@@ -60,7 +60,7 @@ def line_graph(param_data, etiq_x, etiq_y, etiq_y2, show=False):
     ax[0].set(xlabel='Número de clusters')
     ax[1].set(xlabel='Número de clusters')
     
-    fig.savefig("./fig/caso1/param_kmeans.png")
+    fig.savefig("./fig/caso2/param_kmeans.png")
 
     if show:
         plt.show()
@@ -78,14 +78,14 @@ for col in censo:
 
 
 #seleccionar casos
-subset = censo.loc[(censo['MAMPRIMHIJO'] >= 30)]
+subset = censo.loc[(censo['DESEOHIJOS'] == 6)]
    
 print("Subconjunto formado por " + str(len(subset)) + " objetos")
 # seleccionar variables de interés para clustering
 # 'nombre_del_excel'
 #profe: usadas = ['RELIGION', 'NHOGAR', 'NTRABA', 'TEMPRELA', 'NDESEOHIJO']
 #usadas = ['ANORELACION', 'PCUIDADOHIJOS', 'NHIJOSPAR', 'NHIJOSDESEO']
-usadas = ['ANOVI', 'ANORELACION', 'ANOTRABACT', 'EDADIDEAL']
+usadas = ['EDAD', 'SATISFACEVI', 'EDADIDEAL', 'ESTUDIOSA']
 X = subset[usadas] # Columnas que voy a estudiar
 
 # X solo contiene a los que están dentro de los bigotes

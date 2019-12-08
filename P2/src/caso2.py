@@ -227,7 +227,7 @@ censo = pd.read_csv('mujeres_fecundidad_INE_2018.csv')
 prueba = pd.DataFrame(censo)
 
 
-#bar_graph(censo, 'M_NOHIJOS1')
+bar_graph(censo, 'M_NOHIJOS1')
 
 for col in censo:
    censo[col].fillna(censo[col].mean(), inplace=True)
