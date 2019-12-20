@@ -206,12 +206,13 @@ Subtítulo} % Subtitle
 \centering
 \caption{Pruebas realizadas}
 \label{tab:pruebas}
-\makebox[\textwidth][c]{\begin{tabular}{lL{2cm}lllL{3cm}L{3cm}L{3cm}}
+\makebox[\textwidth][c]{\begin{tabular}{lL{2cm}lllL{3cm}L{2.5cm}L{3.5cm}}
 \toprule
 ID & Fecha-hora & Pos. & Sc.-Training & Sc.-Test & Preprocesado & Algoritmos & Parámetros\\
 \midrule
 00 & 5/12/2019 10:07:58 UTC & 315 & 0.7264 & 0.6883 & ESTO ES UN PRUEBA DE ESCRIBIR MUCHAS CMUCHAS MUCHAS COSAS QUE VOY A HACER PARA PREPROCESAR & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2}\\
 
+01 & 19/12/2019 11:18:10 UTC & 356 & 0.7358 & 0.6874 & - & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, feature\_fraction = 0.5, learning\_rate = 0.1, num\_leaves = 50}\\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -223,6 +224,7 @@ Comenzamos aprendiendo a subir los resultados de test a la plataforma para que p
 %TODO: Comentar algo de lightgbm vs xgboost
 
 \subsection{\texttt{p3\_01}}
+\subsubsection{Análisis exploratorio de los datos}
 
 Antes de decidir qué hacer a continuación debemos conocer cierta información sobre los datos. Podemos pensar que necesitamos algún tipo de preprocesado, pues es lo habitual en este tipo de problema, pero sin conocer exactamente cómo son nuestros datos, si tienen o no ruido, la cantidad de valores perdidos, correlación entre las variables, \dots no podremos decidir cómo enfocar el preprocesado ni qué necesidades tiene el conjunto. Para ello comenzamos a escribir algunas funciones de visualización que nos permitan conocer esta información, se encuentran en el \textit{script} \texttt{visualization.py}
 
@@ -255,7 +257,7 @@ Clase & Número de elementos & Tamaño de la clase\\
 \end{tabular}
 \end{table}
 
-También podemos observar la correlación entre las variables en la Figura \ref{fig:corr_matrix}
+También podemos observar la correlación entre las variables en la Figura \ref{fig:corr_matrix}.
 
 
 \begin{figure}[H]
@@ -273,9 +275,29 @@ para conocer cuántos posibles valores toman las variables categóricas. Toman e
 
 Ejecutando \texttt{data\_x.isnull().any()} nos damos cuenta de que nuestras variables no contienen valores perdidos, podemos ahorrarnos la imputación de valores perdidos.
 
+% TODO: Ver si hay ruido
+
+\subsubsection{Ajuste de Lightgbm}
+
+Para tratar de conseguir mejores resultados tenemos, a priori, dos caminos: preprocesar los datos, mejorar el algoritmo. Para mejorar el algoritmo hay, a su vez, dos opciones: elegir el algoritmo y ajustar sus parámetros.
+
+En primer lugar trataremos de ajustar los parámetros de Lightgbm a ver si mejora el resultado. Usando el código de ejemplo \texttt{ejemplo\_ds\_avanzado} nos centraremos en los parámetros \texttt{feature\_fraction} (que tomará ..., \texttt{learning\_rate}, \texttt{num\_leaves}. Fijando \texttt{n\_estimators = 200}. Tras realizar el \texttt{GridSearch} se obtiene (tras 10 minutos de ejecución) que los mejores parámetros son: \texttt{feature\_fraction = 0.5}, \texttt{learning\_rate = 0.1},  \texttt{n\_estimators = 200}, \texttt{num\_leaves = 50}.
+
+Obtenemos un resultado en training de 0.7358 y en test de 0.6874, disminuyendo con respecto al anterior envío, a pesar de haber aumentado en test. ¿Se está produciendo sobre ajuste?
+
+\subsection{\texttt{p3\_02}}
+
+%% Comprobamos qué ocurre si nos quedamos con menor \texttt{learning\_rate}. Usamos los parámetros ajustados, modificando solo la variable comentada. Los parámetros utilizados son: \texttt{feature\_fraction = 0.5}, \texttt{learning\_rate = 0.05},  \texttt{n\_estimators = 200}, \texttt{num\_leaves = 50}.
+Nos preguntamos qué está provocando este sobreajuste, así comprobamos los valores de las variables por defecto y los utilizados. El que más se diferencia es \texttt{num\_leaves}, por defecto es 31 y estamos tomando 50. Realizaremos un GridSearch
+objetivo: menor número de hojas con mejor resultado.
+\subsection{\texttt{p3\_03}}
+%https://lightgbm.readthedocs.io/en/latest/Parameters.html#weight_column
+Tras observar los parámetros de Lightgbm nos damos cuenta de que tiene una opción en la que el propio algoritmo trata este tipo de variables
 
 % TODO:
 % - Pasar a textit: script, test, training, boosting
+% TODO:
+% - Referenciar referencias...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %       REFERENCIAS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
