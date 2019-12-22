@@ -210,9 +210,13 @@ Subtítulo} % Subtitle
 \toprule
 ID & Fecha-hora & Pos. & Sc.-Training & Sc.-Test & Preprocesado & Algoritmos & Parámetros\\
 \midrule
-00 & 5/12/2019 10:07:58 UTC & 315 & 0.7264 & 0.6883 & ESTO ES UN PRUEBA DE ESCRIBIR MUCHAS CMUCHAS MUCHAS COSAS QUE VOY A HACER PARA PREPROCESAR & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2}\\
+00 & 5/12/2019 10:07:58 UTC & 315 & 0.7264 & 0.6883 & - & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2}\\
 
 01 & 19/12/2019 11:18:10 UTC & 356 & 0.7358 & 0.6874 & - & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, feature\_fraction = 0.5, learning\_rate = 0.1, num\_leaves = 50}\\
+
+02 & 22/12/2019 17:32:55 UTC & 360 & 0.7294 & 0.6894 & - & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 35, scale\_pos\_weight = 0.1}\\
+
+03 & 22/12/2019 20:39:08 UTC & 243 & 0.7339 & 0.7227 & \texttt{get\_dummies} para todas las variables categóricas & Lightgbm & {\ttfamily objective='regression\_l1', n\_estimators=200, n\_jobs=2, num\_leaves = 40, scale\_pos\_weight = 0.1}\\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -288,12 +292,37 @@ Obtenemos un resultado en training de 0.7358 y en test de 0.6874, disminuyendo c
 \subsection{\texttt{p3\_02}}
 
 %% Comprobamos qué ocurre si nos quedamos con menor \texttt{learning\_rate}. Usamos los parámetros ajustados, modificando solo la variable comentada. Los parámetros utilizados son: \texttt{feature\_fraction = 0.5}, \texttt{learning\_rate = 0.05},  \texttt{n\_estimators = 200}, \texttt{num\_leaves = 50}.
-Nos preguntamos qué está provocando este sobreajuste, así comprobamos los valores de las variables por defecto y los utilizados. El que más se diferencia es \texttt{num\_leaves}, por defecto es 31 y estamos tomando 50. Realizaremos un GridSearch
-objetivo: menor número de hojas con mejor resultado.
-\subsection{\texttt{p3\_03}}
-%https://lightgbm.readthedocs.io/en/latest/Parameters.html#weight_column
-Tras observar los parámetros de Lightgbm nos damos cuenta de que tiene una opción en la que el propio algoritmo trata este tipo de variables
+Nos preguntamos qué está provocando este sobreajuste, así comprobamos los valores de las variables por defecto y los utilizados. El que más se diferencia es \texttt{num\_leaves}, por defecto es 31 y estamos tomando 50. Es complicado saber hasta qué punto podemos aumentar el número de hojas sin que se llegue a producir el sobre ajuste que provoca malos resultados en la fase de test, más teniendo en cuenta que el número de pruebas a realizar es limitado. Por ello, proseguiré tratando de mejorar el rendimiento de este algoritmo de otro modo.
 
+% https://lightgbm.readthedocs.io/en/latest/Parameters.html
+Para paliar el desbalanceamiento de las clases se pueden usar dos parámetros: \texttt{is\_unbalance} o \texttt{scale\_pos\_weight}.
+Probaremos a configurar ambos parámetros a ver con cuál conseguimos realmente mejor resultado.
+
+Así, en \texttt{p3\_02\_unbalance.py} partimos del código utilizado en \texttt{p3\_00.py} añadiendo las variables \texttt{num\_classes = 3} y \texttt{is\_unbalance = True}. Conseguimos exactamente el mismo resultado que en el archivo de partida (los archivos \texttt{submission} correspondientes no se diferencian) a pesar de que por defecto se asumía que no había desbalanceo. 
+
+Probamos con la otra opción: variamos el peso de la clase positiva entre 0.1 y 0.6 modificando el parámetro \texttt{scale\_pos\_weight}.
+Así, terminamos ejecutando el algoritmo con {\ttfamily n\_estimators = 200, num\_leaves = 35, scale\_pos\_weight = 0.1} que consiguió una puntuación de 0.7294 en entrenamiento y 0.6894 al realizar el envío (mejorando la mejor solución obtenida hasta el momento).
+
+\subsection{p3\_03}
+% https://stackoverflow.com/questions/24109779/running-get-dummies-on-several-dataframe-columns#24109916
+% https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.get_dummies.html
+Una opción que podemos utilizar para preprocesar es, en vez de convertir las variables categóricas a numéricas, realizar un \textit{one-to-many} en el que binarizamos las variables categóricas. Como observamos que eran 8 y que no tomaban demasiados valores, además de que Lightgbm es un algoritmo rápido, probamos este preprocesado. 
+
+Pandas ofrece una función que realiza la transformación sobre el conjunto de datos, mediante la función \texttt{get\_dummies}. En el archivo \texttt{p3\_03.py} encontramos el código correspondiente a esta ejecución. Pasamos de 38 a 68 características.
+
+Conseguimos una puntuación en test de 0.7339 y en prueba de 0.7227.
+
+\subsection{Pruebas fallidas}
+%https://lightgbm.readthedocs.io/en/latest/Parameters.html#categorical_feature
+Tras observar los parámetros de Lightgbm nos damos cuenta de que tiene una opción en la que el propio algoritmo trata este tipo de variables. Probamos a usar esta opción para comparar con el rendimiento que obtuvimos en \texttt{p3\_00}.
+ No funciona (p3\_categorical.py)
+ ValueError: could not convert string to float: 't'
+\subsubsection{umap}
+% https://umap-learn.readthedocs.io/en/latest/
+Por recomendación de un compañero, pruebo a utilizar umap para reducir la dimensionalidad. Tras instalar el paquete mediante \texttt{pip install umap-learn}, pruebo su funcionamiento de forma básica en \texttt{p3\_umap.py} (algoritmo: lightgbm).
+
+Tras largo tiempo de ejecución (media hora por lo menos) consigue exactamente los mismos resultados que p3\_00 :( (resultados en submissions\_ap.csv)
+ 
 % TODO:
 % - Pasar a textit: script, test, training, boosting
 % TODO:
