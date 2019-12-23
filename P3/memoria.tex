@@ -85,6 +85,7 @@
 %%% Tablas
 \usepackage{tabularx}
 \usepackage{float}
+\usepackage{longtable}
 \usepackage{adjustbox}
 \usepackage{booktabs}
 \usepackage{array}
@@ -183,18 +184,19 @@ Subtítulo} % Subtitle
 }
 \pagebreak
 
+%%% Inicio del documento
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%       DESCRIPCIÓN DEL PROBLEMA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{Introducción} TODO ?
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %       Captura de pantalla de Submissions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Captura de pantalla de Submissions}
 \label{sec:subsimissions}
 \pagebreak
-
-%%% Inicio del documento
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%       DESCRIPCIÓN DEL PROBLEMA
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Introducción}
 
 
 %%% Inicio del documento
@@ -217,6 +219,12 @@ ID & Fecha-hora & Pos. & Sc.-Training & Sc.-Test & Preprocesado & Algoritmos & P
 02 & 22/12/2019 17:32:55 UTC & 360 & 0.7294 & 0.6894 & - & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 35, scale\_pos\_weight = 0.1}\\
 
 03 & 22/12/2019 20:39:08 UTC & 243 & 0.7339 & 0.7227 & \texttt{get\_dummies} para todas las variables categóricas & Lightgbm & {\ttfamily objective='regression\_l1', n\_estimators=200, n\_jobs=2, num\_leaves = 40, scale\_pos\_weight = 0.1}\\
+
+04 & 23/12/2019 17:14:45 UTC & 242 & 0.7342 & 0.7245 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective='regression\_l1', n\_estimators=200, n\_jobs=2, num\_leaves = 40, scale\_pos\_weight = 0.1}\\
+
+05 & 23/12/2019 18:58:58 UTC & 242 & 0.7335 & 0.7228 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{SelectKBest}, $k =35$ & Lightgbm & {\ttfamily objective='regression\_l1', n\_estimators=200, n\_jobs=2, num\_leaves = 40, scale\_pos\_weight = 0.1}\\
+
+06 & 23/12/2019 21:29:30 UTC & 234 & 0.7375 & 0.7253 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators=200, n\_jobs=2, num\_leaves = 45, scale\_pos\_weight = 0.1}\\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -312,6 +320,78 @@ Pandas ofrece una función que realiza la transformación sobre el conjunto de d
 
 Conseguimos una puntuación en test de 0.7339 y en prueba de 0.7227.
 
+\subsection{\texttt{p3\_04}}
+
+Aunque Lightgbm es un algoritmo ligero y se puede ejecutar con las 68 variables que conseguimos tras binarizar las categóricas, puede que no todas ellas sean importantes para clasificar si el edificio ha sido dañado o no, alejando el modelo del modelo ideal. Por ello, partiendo del código anterior en el que utlizamos Lightgbm con 0.1 para \texttt{scale\_pos\_weight} añadimos un método de selección de variables al preprocesado.
+
+% https://scikit-learn.org/stable/modules/feature_selection.html
+Nuestro primer intento consiste en eliminar las variables con varianza baja. Por defecto, elimina las variables que tengan varianza nula, esto es, aquellas variables que tengan el mismo valor para todos los ejemplos. Indicamos un umbral para que elimine. Por ejemplo, para 0.9 obtenemos de f1 score en training 0.7319 (22 variables, en torno a 15 segundos por partición). Con un umbral de 0.95 nos quedamos con 33 variables finalmente, los tiempos por partición van desde 16 hasta 20 segundos, pero la puntuación se ve favorecida (en training) siendo ahora 0.7342. La puntuación al subirlo en la web es de 0.7245 (mejorando en milésimas al programa base sin selección de variables).
+
+Tratamos de ver la importancia de cada variable adaptando...%https://stackoverflow.com/questions/53413701/feature-importance-using-lightgbm/53578643#53578643
+% https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.VarianceThreshold.html
+% https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMClassifier.html
+en la Figura \ref{fig:lgbm_imp_04} podemos ver el número de veces que una variable se usa en un modelo.
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.9\textwidth, width=1.0\textwidth]{lgbm_importances04}
+    \caption{Importancia de las variables}
+    \label{fig:lgbm_imp_04}
+\end{figure}
+
+\subsection{\texttt{p3\_05}}
+Seleccionando variables a partir de su varianza hemos mejorado algunas milésimas el resultado, igual utilizando algún otro método de selección más complejo logramos ajustarnos un poco mejor a las variables realmente determinantes en nuestro problema.
+
+Probamos a seleccionar los k mejores
+% https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectKBest.html#sklearn.feature_selection.SelectKBest
+
+Notamos que los tiempos de ejecución disminuyen, pasan a rondar los 10 segundos. El resultado en entrenamiento es una puntuación f1-score de 0.7251 para 10 características. Observamos en la Figura 
+\label{fig:lgbm_imp_05_10} que las cuatro primeras variables son las mismas que seleccionando según la varianza, pero a partir de ahí varían.
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.9\textwidth, width=1.0\textwidth]{lgbm_importances_05_10}
+    \caption{Importancia de las variables tras seleccionar las 10 mejores. }
+    \label{fig:lgbm_imp_05_10}
+\end{figure}
+
+Si nos quedamos solo con 4 variables no selecciona estas cuatro y el rendimiento baja a 0.6772.
+
+Como no sabemos cuál es la mejor forma de seleccionar el valor $k$ del preprocesado realizamos pruebas con algunos valores para elegir el mejor. En la Tabla \label{tab:05_k} podemos ver los diferentes valores probados.
+
+\begin{table}[H]
+\centering
+\caption{Selección de las $k$ mejores características.}
+\label{tab:05_k}
+\begin{tabular}{lrr}
+\toprule
+Nº de variables & F1-Score & Tiempo por partición ($s$)\\
+\midrule
+4 & 0.6772 & ~7\\
+10 & 0.7251 & 9.5 - 13\\
+20 & 0.7296 & 10 - 15\\
+25 & 0.7317 & 12 - 17\\
+30 & 0.7325 & 17 - 18\\
+35 & 0.7335 & 18 - 20\\
+37 & 0.7294 & 19 - 21\\
+40 & 0.7302 & 18 - 23\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Nos quedamos con 35 variables... consiguiendo una puntuación en test de 0.7228 (parecida a la conseguida sin realizar la selección de variables). En la Figura \label{fig:lgbm_imp_05_35} observamos las variables más utilizadas para clasificar.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.9\textwidth, width=1.0\textwidth]{lgbm_importances_05}
+    \caption{Importancia de las variables tras seleccionar las 35 mejores. }
+    \label{fig:lgbm_imp_05_35}
+\end{figure}
+
+Comparando con las seleccionadas en p3\_04 nos damos cuenta de que aunque las primeras son similares y coinciden en algunas más, \texttt{height\_percentage} es de las más utilizadas en el caso anterior y en este no fue seleccionada.
+
+\subsection{\texttt{p3\_06}}
+Tras perder el rato con algunas pruebas fallidas, decido no desperdiciar la última subida del día tratando de mejorar aumentando el número de hojas a 45. Puntuación en training: 0.7375, puntuación en test: 0.7253.
+
+
 \subsection{Pruebas fallidas}
 %https://lightgbm.readthedocs.io/en/latest/Parameters.html#categorical_feature
 Tras observar los parámetros de Lightgbm nos damos cuenta de que tiene una opción en la que el propio algoritmo trata este tipo de variables. Probamos a usar esta opción para comparar con el rendimiento que obtuvimos en \texttt{p3\_00}.
@@ -322,7 +402,19 @@ Tras observar los parámetros de Lightgbm nos damos cuenta de que tiene una opci
 Por recomendación de un compañero, pruebo a utilizar umap para reducir la dimensionalidad. Tras instalar el paquete mediante \texttt{pip install umap-learn}, pruebo su funcionamiento de forma básica en \texttt{p3\_umap.py} (algoritmo: lightgbm).
 
 Tras largo tiempo de ejecución (media hora por lo menos) consigue exactamente los mismos resultados que p3\_00 :( (resultados en submissions\_ap.csv)
- 
+\subsubsection{Información mutua}
+Tras p3\_04...
+
+Probamos a utilizar como criterio la información mutua, que representa el grado de dependencia entre dos variables, la información que una contiene sobre la otra. Si vale 0 es porque las variables son independientes... p3\_mi.py
+notamos que tarda mucho, puede ser porque se basa en cosas tipo knn que con el alto número de instancias es excesivamente lento...
+
+\subsubsection{Boruta}
+Para terminar los experimentos de selección de variables con Lightgbm utilizaremos Boruta, que pretende seleccionar las variables más importantes sin que tengamos que fijar de antemano el número de variables a utilizar.
+
+Partiendo del código proporcionado por el profesor de prácticas utilizaremos un RandomForest para seleccionar las características más importantes. Nuestra primera impresión es negativa debido al alto tiempo de cómputo 142.44 segundos para seleccionar.
+
+Tarda del orden de 2700 segundos y me da un error :/ mala idea un random forest con tantas variables.
+
 % TODO:
 % - Pasar a textit: script, test, training, boosting
 % TODO:
