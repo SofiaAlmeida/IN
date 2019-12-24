@@ -204,30 +204,34 @@ Subtítulo} % Subtitle
 %       Pruebas realizadas
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Pruebas realizadas}
-\begin{table}[H]
-\centering
+
+\begin{longtable}{lL{2cm}lllL{3cm}L{2.5cm}L{3.5cm}}
 \caption{Pruebas realizadas}
-\label{tab:pruebas}
-\makebox[\textwidth][c]{\begin{tabular}{lL{2cm}lllL{3cm}L{2.5cm}L{3.5cm}}
+\label{tab:pruebas}\\
 \toprule
 ID & Fecha-hora & Pos. & Sc.-Training & Sc.-Test & Preprocesado & Algoritmos & Parámetros\\
 \midrule
 00 & 5/12/2019 10:07:58 UTC & 315 & 0.7264 & 0.6883 & - & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2}\\
-
+\midrule
 01 & 19/12/2019 11:18:10 UTC & 356 & 0.7358 & 0.6874 & - & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, feature\_fraction = 0.5, learning\_rate = 0.1, num\_leaves = 50}\\
 
 02 & 22/12/2019 17:32:55 UTC & 360 & 0.7294 & 0.6894 & - & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 35, scale\_pos\_weight = 0.1}\\
 
-03 & 22/12/2019 20:39:08 UTC & 243 & 0.7339 & 0.7227 & \texttt{get\_dummies} para todas las variables categóricas & Lightgbm & {\ttfamily objective='regression\_l1', n\_estimators=200, n\_jobs=2, num\_leaves = 40, scale\_pos\_weight = 0.1}\\
+03 & 22/12/2019 20:39:08 UTC & 243 & 0.7339 & 0.7227 & \texttt{get\_dummies} para todas las variables categóricas & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 40, scale\_pos\_weight = 0.1}\\
 
-04 & 23/12/2019 17:14:45 UTC & 242 & 0.7342 & 0.7245 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective='regression\_l1', n\_estimators=200, n\_jobs=2, num\_leaves = 40, scale\_pos\_weight = 0.1}\\
+04 & 23/12/2019 17:14:45 UTC & 242 & 0.7342 & 0.7245 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 40, scale\_pos\_weight = 0.1}\\
 
-05 & 23/12/2019 18:58:58 UTC & 242 & 0.7335 & 0.7228 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{SelectKBest}, $k =35$ & Lightgbm & {\ttfamily objective='regression\_l1', n\_estimators=200, n\_jobs=2, num\_leaves = 40, scale\_pos\_weight = 0.1}\\
+05 & 23/12/2019 18:58:58 UTC & 242 & 0.7335 & 0.7228 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{SelectKBest}, $k =35$ & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 40, scale\_pos\_weight = 0.1}\\
 
-06 & 23/12/2019 21:29:30 UTC & 234 & 0.7375 & 0.7253 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators=200, n\_jobs=2, num\_leaves = 45, scale\_pos\_weight = 0.1}\\
+06 & 23/12/2019 21:29:30 UTC & 234 & 0.7375 & 0.7253 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 45, scale\_pos\_weight = 0.1}\\
+
+07 & 24/12/2019 10:11:57 UTC & 237 & 0.8486 & 0.7167 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.9 & RandomForest & {\ttfamily n\_jobs = -1, max\_depth = 20, n\_estimators = 300}\\
+
+08 & 24/12/2019 10:45:07 UTC & 237 & 0.8468 & 0.6969 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.9 & RandomForest & {\ttfamily class\_weight = 'balanced', max\_depth = 20, max\_features = 'sqrt', n\_estimators = 300}\\
+
+09 & 2019-12-24 11:55:27 UTC & 237 & 0.9825 & 0.7177 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & RandomForest & {\ttfamily max\_depth = 40, max\_features = 'sqrt', n\_estimators = 500}\\
 \bottomrule
-\end{tabular}}
-\end{table}
+\end{longtable}
 \newpage
 
 \section{Diario de pruebas}
@@ -391,7 +395,33 @@ Comparando con las seleccionadas en p3\_04 nos damos cuenta de que aunque las pr
 \subsection{\texttt{p3\_06}}
 Tras perder el rato con algunas pruebas fallidas, decido no desperdiciar la última subida del día tratando de mejorar aumentando el número de hojas a 45. Puntuación en training: 0.7375, puntuación en test: 0.7253.
 
+\subsection{\texttt{p3\_07}}
 
+Pasamos ahora a probar otro algoritmo: RandomForest.
+% https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html#sklearn.ensemble.RandomForestClassifier
+
+Investigando un poco vemos que aunque en teoría los árboles de decisión puedan trabajar con todo tipo de variables, en la práctica la implementación de los algoritmos no lo permite. Así que en este caso también debemos numerizar las variables categóricas.
+
+Empezamos de forma similar a como lo hicimos con Lightgbm. Numerizamos las variables categóricas, haciendo un preprocesado mínimo. Realizamos un ajuste de parámetros mínimo para ver qué variables puede ser más interesante afinar.
+
+Como tarda mucho tiempo, decido probar las opciones que funcionaron mejor con Lightgbm, a ver si en este caso también dan buenos resultados. Utilizando como criterio de selección la varianza e imponiendo un umbral de 0.9 nos quedamos con 22 variables que serán las utilizadas con RandomForest. Unos 8 minutos para el GridSearch (y eso que no puse valores muy grandes... \texttt{max\_depth: [10, 20]}, \texttt{n\_estimators:[200, 300]}). Los mejores parámetros resultan ser \texttt{max\_depth = 20} y \texttt{n\_estimators = 300}.
+Con un tiempo de ejecución de más de un minuto por partición (en torno a los 70 segundos) consigue una puntuación en training de 0.8486 y en test de 0.7167.
+
+\subsection{\texttt{p3\_08}}
+
+Para tratar de paliar el sobreaprendizaje, siguiendo la recomendación de %https://scikit-learn.org/stable/modules/ensemble.html#forest
+se fija el número máximo de características en la raíz cuadrada del número de características, confiando también que esto disminuya un poco el tiempo de cómputo. Además, se modifica la variable \texttt{class\_weight} con la que se actuará sobre el desbalanceo. Se consideran distintas opciones desde el balanceo automático calculado por el algoritmo hasta algunas combinaciones de pesos puestas manualmente. Tras realizar el ajuste de parámetros mediante GridSearch (que llevó unos 12 minutos), se elige la siguiente combinación de los mismos: {\ttfamily class\_weight = 'balanced', max\_depth = 20, max\_features = 'sqrt', n\_estimators = 300}.
+
+Cada partición tarda unos 70 segundos. Se consigue una puntuación en entrenamiento de 0.8468 (menor que antes), confiando en menor sobre ajuste lo subimos y obtenemos una puntuación de 0.6969 (¡peor que sin balancear!).
+
+\subsection{\texttt{p3\_09}}
+Probamos a quitar \texttt{max\_features = 'sqrt'}, obtenemos una puntuación en training de 0.8468 (igual que cuando sí que estaba).
+
+Si lo mantenemos pero quitamos el \texttt{class\_weight='balanced'} la puntuación en entrenamiento es de 0.8486, así que decidimos quitar este parámetro pues sin él mejora un poco el resultado.
+
+Por último, tratamos de mejorar un poco aumentando la profundidad máxima, número de estimadores y número de variables. Para ello, se toma en la selección de variables \texttt{threshold=(.95 * (1 - .95))}, \texttt{max\_depth = 40}, \texttt{n\_estimators = 500}, \texttt{max\_features = 'sqrt'}. Las iteraciones aumentan su tiempo de ejecución hasta superar los dos minutos (en torno a 150 segundos) La puntuación en entrenamiento es de 0.9825, ¿estará sobreajustando? Lo comprobamos subiendo los resultados y obteniendo una puntuación de 0.7177. ¿Cómo podemos evitar este sobre ajuste?
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Pruebas fallidas}
 %https://lightgbm.readthedocs.io/en/latest/Parameters.html#categorical_feature
 Tras observar los parámetros de Lightgbm nos damos cuenta de que tiene una opción en la que el propio algoritmo trata este tipo de variables. Probamos a usar esta opción para comparar con el rendimiento que obtuvimos en \texttt{p3\_00}.
