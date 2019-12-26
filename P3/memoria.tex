@@ -229,7 +229,19 @@ ID & Fecha-hora & Pos. & Sc.-Training & Sc.-Test & Preprocesado & Algoritmos & P
 
 08 & 24/12/2019 10:45:07 UTC & 237 & 0.8468 & 0.6969 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.9 & RandomForest & {\ttfamily class\_weight = 'balanced', max\_depth = 20, max\_features = 'sqrt', n\_estimators = 300}\\
 
-09 & 2019-12-24 11:55:27 UTC & 237 & 0.9825 & 0.7177 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & RandomForest & {\ttfamily max\_depth = 40, max\_features = 'sqrt', n\_estimators = 500}\\
+09 & 2019/12/24 11:55:27 UTC & 237 & 0.9825 & 0.7177 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & RandomForest & {\ttfamily max\_depth = 40, max\_features = 'sqrt', n\_estimators = 500}\\
+
+10 & 2019/12/25 11:42:49 UTC & 239 & 0.7375 & 0.6823 & \texttt{OneHotencoder} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 45, scale\_pos\_weight = 0.1}\\
+
+11 & 2019/12/25 12:40:41 UTC & 160 & 0.7693 & 0.7388 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 500, n\_jobs = -1, num\_leaves = 55, scale\_pos\_weight = 0.1}\\
+
+12 & 2019/12/25 12:52:50 UTC & 148 & 0.7855 & 0.7412 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 700, n\_jobs = -1, num\_leaves = 60, scale\_pos\_weight = 0.1}\\
+
+13 & 2019/12/26 15:35:06 UTC & 117 & 0.8070 & 0.7444 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 1000, n\_jobs = -1, num\_leaves = 65, scale\_pos\_weight = 0.1}\\
+
+14 & 2019/12/26 16:34:32 UTC & 107 & 0.8184 & 0.7452 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 1000, n\_jobs = -1, num\_leaves = 80, scale\_pos\_weight = 0.05}\\
+
+15 & 2019/12/26 18:24:17 UTC & 107 & 0.8259 & 0.7448 &\texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 1000, n\_jobs = -1, num\_leaves = 90, scale\_pos\_weight = 0.05}\\
 \bottomrule
 \end{longtable}
 \newpage
@@ -420,13 +432,127 @@ Probamos a quitar \texttt{max\_features = 'sqrt'}, obtenemos una puntuación en 
 Si lo mantenemos pero quitamos el \texttt{class\_weight='balanced'} la puntuación en entrenamiento es de 0.8486, así que decidimos quitar este parámetro pues sin él mejora un poco el resultado.
 
 Por último, tratamos de mejorar un poco aumentando la profundidad máxima, número de estimadores y número de variables. Para ello, se toma en la selección de variables \texttt{threshold=(.95 * (1 - .95))}, \texttt{max\_depth = 40}, \texttt{n\_estimators = 500}, \texttt{max\_features = 'sqrt'}. Las iteraciones aumentan su tiempo de ejecución hasta superar los dos minutos (en torno a 150 segundos) La puntuación en entrenamiento es de 0.9825, ¿estará sobreajustando? Lo comprobamos subiendo los resultados y obteniendo una puntuación de 0.7177. ¿Cómo podemos evitar este sobre ajuste?
+
+\subsection{\texttt{p3\_10}}
+
+El gran sobreajuste de RandomForest y su tiempo elevado de ejecución hace que desestimemos este algoritmo de momento y volvamos a Lightgbm.
+De %https://www.kaggle.com/alekseyeliseev/richter-s-predictor
+descubrimos que \texttt{get\_dummies} no es la única forma de categorizar variables... como este cambio hizo que mejoraran los resultados voy a probar diferentes formas de binarizar a ver si varían los resultados:
+%https://towardsdatascience.com/encoding-categorical-features-21a2651a065c
+
+Partiendo del código \texttt{p3\_06.py} que fue el que mejores resultados dio, realizaremos la binarización con OneHotEncoder.
+El resultado en training es similar al del código original aunque si comparamos los archivos submission correspondientes nos damos cuenta de que difieren (10273/86867)
+% diff -U 0 file1 file2 | grep ^@ | wc -l
+, probamos a subirlo a ver cuál es mejor. Sin embargo el resultado en test es bastante peor, de 0.6823.
+
+\subsection{\texttt{p3\_11}}
+
+Volvemos a partir del código de \texttt{p3\_06.py} y probamos esta vez la otra alternativa de %https://towardsdatascience.com/encoding-categorical-features-21a2651a065c
+DictVectorizer %https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.DictVectorizer.html
+Se consiguen otra vez 33 y una puntuación en training de 0.7375, pero en este caso tenemos 0 diferencias. Guardamos este código en el archivo \texttt{p3\_dict.py} y tratamos de ajustar un poco más los parámetros utilizados en \texttt{p3\_06.py}.
+
+Así, probamos las combinaciones de los parámetros: \texttt{learning\_rate = 0.1}, \texttt{num\_leaves = [45, 50, 55]}, \texttt{n\_estimators = [200, 300, 400, 500]}.
+
+Tras largo rato de ejecución para probar todas las combinaciones (36), se concluye que los mejores parámetros son: \texttt{num\_leaves = 55} y \texttt{n\_estimators = 500}. El aumento de estos valores provoca un incremento en el tiempo de ejecución (unos 40 segundos por partición). Consiguiendo un F1-Score en entrenamiento de 0.7693, que se traduce en un valor en test de 0.7388 (mejor hasta el momento).
+
+\subsection{\texttt{p3\_12}}
+
+Parece que aumentar el número de hojas y estimadores es positivo para el resultado, pruebo a ejecutar con \texttt{num\_leaves = 60} y \texttt{n\_estimators = 700}. El tiempo de ejecución se ve afectado, cada partición tarda entre 50 y 60 segundos. Consigo una puntuación en training de 0.7855 y en test de 0.7412.
+
+\subsection{\texttt{p3\_13}}
+
+Nos preguntamos cuánto podemos aumentar estos valores antes de que se produzca sobreajuste. Ejecutamos, volviendo a aumentar ambos valores:  \texttt{num\_leaves = 65} y \texttt{n\_estimators = 1000}. Los tiempos de ejecución pasan a estar en el rango 60-75 segundos por partición. Conseguimos una puntuación al entrenar de 0.8070 y al realizar un envío de 0.7444, mejorando el resultado anterior.
+
+\subsection{\texttt{p3\_14}}
+
+Podemos hacer pruebas para tratar de ajustar el resto de parámetros, para ello partimos del archivo \texttt{p3\_06.py} (para evitar tiempos de ejecución demasiado grandes) y asumiremos que si mejora en este caso, mejorará al aumentar el número de estimadores y hojas.
+
+Pasamos a comprobar qué umbral es el más adecuado en la selección de variables, en la Tabla \ref{tab:14} podemos observar los resultados de las ejecuciones para el distinto valor del umbral.
+
+\begin{table}[H]
+\centering
+\caption{Selección de características variando el umbral.}
+\label{tab:14}
+\begin{tabular}{lrrr}
+\toprule
+Umbral & Nº variables & F1-Score - Trainig & Tiempo por partición ($s$)\\
+\midrule
+0.9 & 22 & 0.7341 & 14-16\\
+0.91 & 24 & 0.7344 & 14-17 \\
+0.92 & 26 & 0.7348 & 15-19 \\
+0.93 & 27 & 0.7356 & 16-22 \\  
+0.94 & 30 & 0.7364 & 21-26 \\
+%0.945 & 31 & 0.7375 & 16-19\\
+0.95 & 33 & 0.7375 & 14-18\\
+0.96 & 37 & 0.7372 & 17-20\\ 
+\bottomrule
+\end{tabular}
+\end{table}
+
+Parece que el umbral más adecuado es el que habíamos elegido, 0.95.
+
+El siguiente parámetro a ajustar será \texttt{scale\_pos\_weight}, relativo al desbalanceo de las clases. Para ajustarlo utilizaré un GridSearch en el que comprobaré qué valor es mejor entre \texttt{[0.05, 0.075, 0.1, 0.15, 0.175]} (5 min para las pruebas, archivo \texttt{p3\_14\_sc}). El que mejor resultados da es 0.05, con un resultado en training de 0.7375 (tiempo entre 19 y 25 segundos por partición), si lo comparamos con \texttt{p3\_06.py} es exactamente igual. ¿Será mejor si lo bajamos más?
+
+Modificamos el archivo para probar valores menores \texttt{[0.05, 0.04, 0.03, 0.02, 0.01]}, el mejor parámetro sigue siendo 0.05.
+
+Partiremos del archivo \texttt{p3\_13.py} con este parámetro ya ajustado y aumentando el número de hojas a 80. Tiempo de ejecución por partición: 75 - 100 segundos. Puntuación en training: 0.8184, la puntuación en test es de 0.7452.
+
+\subsection{\texttt{p3\_15}}
+
+En nuestras gráficas de selección de características destacaba que las primeras variables coincidían en todas ellas, eran las llamadas \texttt{geo\_level\_i\_id}. Estas variables representan las regiones geográficas en las que están situadas los edificios.
+
+Investigando un poco descubrimos que Nepal está formado por 7 provincias, cada una de las cuales tiene una serie de distritos (entre 8 y 14), en total hay 77 distritos. La variable \texttt{geo\_level\_1\_id} toma valores entre 0 y 30, no logro saber bien a qué hace referencia.
+
+En las Figuras \ref{fig:geo11} y \ref{fig:geo12} observamos la relación entre los valores que toma esta variable y el grado de daño del edificio.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.9\textwidth, width=1.0\textwidth]{geo_level_1_1}
+    \caption{Relación \texttt{geo\_level\_1\_id} y \texttt{damage\_grade}.}
+    \label{fig:geo11}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.9\textwidth, width=1.0\textwidth]{geo_level_1_2}
+    \caption{Relación \texttt{geo\_level\_1\_id} y \texttt{damage\_grade}.}
+    \label{fig:geo12}
+\end{figure}
+
+En cualquier caso, es una variable categórica que está tomando valores numéricos, es decir, se le está induciendo cierto orden que a priori no tienen. Podemos probar a binarizar esta variable a ver si los resultados mejoran (con geo\_level\_2 y 3 aumentaría demasiado el número de variables).
+
+Tras binarizar tenemos 98 variables que al seleccionar se quedan en 41. Las pruebas iniciales se hacen partiendo de \texttt{p3\_06.py} por evitar tiempos de ejecución demasiado elevados. Conseguimos un resultado en training de 0.7291, menor que el 0.7375 obtenido en el intento 06. Tiempos entre 17 y 22 segundos.
+
+Pruebo a realizar lo mismo, aumentando el umbral de selección a 0.97, en este caso nos quedamos con 52 variables, los tiempos de ejecución van de 18 segundos hasta 23. El resultado en training es ahora de 0.7337.
+
+Umbral 0.99, nos deja con 70 variables tiempos entre 20 y 24 segundos
+0.7369.
+% error de discrepancia en número...
+
+Si nos quedamos con las 98 variables los tiempos van desde 19 hasta 24 y el resultado es de 0.7361.
+
+No conseguimos una mejora, ni tampoco nos queda mucho más tiempo hoy, así probamos a aumentar el número de hojas para tratar de mejorar el intento 14. Tarda unos segundos 80 segundos por partición. El resultado en training es de 0.8259 y en test de 0.7448 (un poco peor que el intento 14 de partida). Debe ser que se está produciendo sobreajuste.
+
+\subsection{\texttt{p3\_16}}
+
+Hemos visto que los parámetros \texttt{num\_leaves} y \texttt{n\_estimators} son determinantes para la buena ejecución de este algoritmo, por ello, realizaremos un ajuste de parámetros específico a ver qué combinación de parámetros proporciona mejores resultados. Probaremos las siguientes combinaciones: \texttt{num\_leaves $\in$ \{50, 60, 70, 80, 90, 100\}, n\_estimators $\in$ \{200, 300, 400, 500, 600, 700, 800, 900, 1000\},
+scale\_pos\_weight $\in$ \{0.05, 0.1\}}.
+
+%% \subsection{\texttt{p3\_}}
+
+%% Nos extraña el mal resultado obtenido en el intento 10, comienzan a entrarnos las dudas sobre si el archivo enviado fue el correcto, así que, a riesgo de obtener otra vez una mala puntuación, decido volver a subir el archivo \texttt{submission\_10.csv}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Pruebas fallidas}
 %https://lightgbm.readthedocs.io/en/latest/Parameters.html#categorical_feature
-Tras observar los parámetros de Lightgbm nos damos cuenta de que tiene una opción en la que el propio algoritmo trata este tipo de variables. Probamos a usar esta opción para comparar con el rendimiento que obtuvimos en \texttt{p3\_00}.
+Tras observar los parámetros de Lightgbm nos damos cuenta de que tiene una opción en la que el propio algoritmo trata este tipo de variables. Partiendo de \texttt{p3\_06.py} adaptamos el algoritmo para usar el parámetro \texttt{categorical\_features}.
  No funciona (p3\_categorical.py)
  ValueError: could not convert string to float: 't'
+ solo acepta tipos enteros... Una vez solucionado ese error nos encontramos con:
+ [LightGBM] [Fatal] categorical\_feature is not a number,
+if you want to use a column name,
+please add the prefix "name:" to the column name
+
 \subsubsection{umap}
 % https://umap-learn.readthedocs.io/en/latest/
 Por recomendación de un compañero, pruebo a utilizar umap para reducir la dimensionalidad. Tras instalar el paquete mediante \texttt{pip install umap-learn}, pruebo su funcionamiento de forma básica en \texttt{p3\_umap.py} (algoritmo: lightgbm).
