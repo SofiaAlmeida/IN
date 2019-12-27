@@ -80,7 +80,75 @@ def plotCorrelationMatrix(df, graphWidth):
     plt.colorbar(corrMat)
     plt.title(f'Correlation Matrix for {filename}', fontsize=15)
     plt.savefig("../fig/corr_matrix.svg")
-    
+
+def relation_geo_level():
+    '''Relación geo_level_i_id con damage_grade'''
+    data_x["damage_grade"] = data_y["damage_grade"]
+    sns.set()
+    fig,ax=plt.subplots(1,2,figsize=(10,5), sharey=True)
+    ###############################################################
+    #                      Violin plot                            #
+    ###############################################################
+    sns.violinplot(data=data_x,x='damage_grade',y='geo_level_1_id',hue='damage_grade', split=False,ax=ax[0])
+
+    sns.stripplot(data=data_x,x='damage_grade',y='geo_level_1_id',hue='damage_grade', ax=ax[1])
+    #plt.ylabel("Company Status",**font)
+    ax[0].set_title("geo_level_1_id")
+    ax[1].set_title("geo_level_1_id")
+    plt.savefig("../fig/geo_level_1_1.png")
+    ###############################################################
+    #                       Facet Grid                            #
+    ###############################################################
+
+    plt.figure(figsize=(11,9))
+    sns.FacetGrid(data_x,hue='damage_grade',height=5,palette="viridis")\
+       .map(sns.distplot,'geo_level_1_id')\
+       .add_legend()
+    plt.title("geo_level_1_id")
+    plt.savefig("../fig/geo_level_1_2.png")
+    ###############################################################
+    fig,ax=plt.subplots(1,2,figsize=(10,5), sharey=True)
+    ###############################################################
+    #                      Violin plot                            #
+    ###############################################################
+    sns.violinplot(data=data_x,x='damage_grade',y='geo_level_2_id',hue='damage_grade', split=False,ax=ax[0])
+
+    sns.stripplot(data=data_x,x='damage_grade',y='geo_level_2_id',hue='damage_grade', ax=ax[1])
+    ax[0].set_title("geo_level_2_id")
+    ax[1].set_title("geo_level_2_id")
+    plt.savefig("../fig/geo_level_2_1.png")
+    ###############################################################
+    #                       Facet Grid                            #
+    ###############################################################
+
+    plt.figure(figsize=(11,9))
+    sns.FacetGrid(data_x,hue='damage_grade',height=5,palette="viridis")\
+   .map(sns.distplot,'geo_level_2_id')\
+   .add_legend()
+    plt.title("geo_level_2_id")
+    plt.savefig("../fig/geo_level_2_2.png")
+    ###############################################################
+    fig,ax=plt.subplots(1,2,figsize=(10,5), sharey=True)
+    ###############################################################
+    #                      Violin plot                            #
+    ###############################################################
+    sns.violinplot(data=data_x,x='damage_grade',y='geo_level_3_id',hue='damage_grade', split=False,ax=ax[0])
+
+    sns.stripplot(data=data_x,x='damage_grade',y='geo_level_3_id',hue='damage_grade', ax=ax[1])
+    ax[0].set_title("geo_level_3_id")
+    ax[1].set_title("geo_level_3_id")
+    plt.savefig("../fig/geo_level_3_1.png")
+    ###############################################################
+    #                       Facet Grid                            #
+    ###############################################################
+
+    plt.figure(figsize=(11,9))
+    sns.FacetGrid(data_x,hue='damage_grade',height=5,palette="viridis")\
+   .map(sns.distplot,'geo_level_3_id')\
+   .add_legend()
+    plt.title("geo_level_3_id")
+    plt.savefig("../fig/geo_level_3_2.png")
+        
 #------------------------------------------------------------------
 #------------------------------------------------------------------
 #------------------------------------------------------------------
@@ -107,4 +175,6 @@ data_y.drop(labels=['building_id'], axis=1,inplace = True)
 #print(data_x.isnull().any())
 #scatter_matrix(data_x, data_y, ['count_floors_pre_eq', 'age', 'area_percentage', 'height_percentage', 'position'], "1")
 #plotCorrelationMatrix(data_x, 12)
-print(data_x.describe().T.style.background_gradient(cmap='Set2',low =0.4,high=0.1,axis=0))
+#print(data_x.describe().T.style.background_gradient(cmap='Set2',low =0.4,high=0.1,axis=0))
+relation_geo_level()
+

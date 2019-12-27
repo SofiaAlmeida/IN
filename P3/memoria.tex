@@ -204,7 +204,10 @@ Subtítulo} % Subtitle
 %       Pruebas realizadas
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Pruebas realizadas}
-
+% TODO: ARREGLAR TABLA:
+%      - Centrar
+%      - Dividir filas (con una línea más clarita o coloreando fila sí, fila no)
+%      - Poner fecha en el mismo formato
 \begin{longtable}{lL{2cm}lllL{3cm}L{2.5cm}L{3.5cm}}
 \caption{Pruebas realizadas}
 \label{tab:pruebas}\\
@@ -229,7 +232,7 @@ ID & Fecha-hora & Pos. & Sc.-Training & Sc.-Test & Preprocesado & Algoritmos & P
 
 08 & 24/12/2019 10:45:07 UTC & 237 & 0.8468 & 0.6969 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.9 & RandomForest & {\ttfamily class\_weight = 'balanced', max\_depth = 20, max\_features = 'sqrt', n\_estimators = 300}\\
 
-09 & 2019/12/24 11:55:27 UTC & 237 & 0.9825 & 0.7177 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & RandomForest & {\ttfamily max\_depth = 40, max\_features = 'sqrt', n\_estimators = 500}\\
+09 & 24/12/2019 11:55:27 UTC & 237 & 0.9825 & 0.7177 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & RandomForest & {\ttfamily max\_depth = 40, max\_features = 'sqrt', n\_estimators = 500}\\
 
 10 & 2019/12/25 11:42:49 UTC & 239 & 0.7375 & 0.6823 & \texttt{OneHotencoder} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 45, scale\_pos\_weight = 0.1}\\
 
@@ -242,6 +245,12 @@ ID & Fecha-hora & Pos. & Sc.-Training & Sc.-Test & Preprocesado & Algoritmos & P
 14 & 2019/12/26 16:34:32 UTC & 107 & 0.8184 & 0.7452 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 1000, n\_jobs = -1, num\_leaves = 80, scale\_pos\_weight = 0.05}\\
 
 15 & 2019/12/26 18:24:17 UTC & 107 & 0.8259 & 0.7448 &\texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 1000, n\_jobs = -1, num\_leaves = 90, scale\_pos\_weight = 0.05}\\
+
+16 & 27/12/2019 12:29:53 UTC & 110 & 0.8061 & 0.7443 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 900, n\_jobs = -1, num\_leaves = 70, scale\_pos\_weight = 0.05}\\
+
+17 & 27/12/2019 17:40:36 UTC & 110 & 0.7913 & 0.7425  & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & XGBoost & {\ttfamily predictor = 'cpu\_predictor', n\_gpus = 0, n\_estimators = 200, eta = 0.3, max\_depth = 6, max\_delta\_step = 7}\\
+
+18 & 27/12/2019 19:01:06 UTC & 98 & 0.8691 & 0.7425 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & XGBoost{\ttfamily n\_estimators = 700, eta = 0.1, max\_depth = 10}\\
 \bottomrule
 \end{longtable}
 \newpage
@@ -536,7 +545,28 @@ No conseguimos una mejora, ni tampoco nos queda mucho más tiempo hoy, así prob
 \subsection{\texttt{p3\_16}}
 
 Hemos visto que los parámetros \texttt{num\_leaves} y \texttt{n\_estimators} son determinantes para la buena ejecución de este algoritmo, por ello, realizaremos un ajuste de parámetros específico a ver qué combinación de parámetros proporciona mejores resultados. Probaremos las siguientes combinaciones: \texttt{num\_leaves $\in$ \{50, 60, 70, 80, 90, 100\}, n\_estimators $\in$ \{200, 300, 400, 500, 600, 700, 800, 900, 1000\},
-scale\_pos\_weight $\in$ \{0.05, 0.1\}}.
+  scale\_pos\_weight $\in$ \{0.05, 0.1\}}. Tras  142.4min de ejecución, se llega a la conclusión de que los mejores parámetros son: {\ttfamily n\_estimators = 900, num\_leaves = 70, scale\_pos\_weight = 0.05}. En torno a los 70 segundos de ejecución por partición, cosigue un resultado en entrenamiento de 0.8061.
+
+Si probamos la binarización de geo\_level\_1\_id (\texttt{p3\_16\_geo.py}) con estos parámetros se queda con 41 variables, tiempo por partición entre 65 y 80 segundos. El resultado en training es de 0.7995, un poco menor...
+
+Así, subimos los resultados de la ejecución sin binarizar esta variable... resultado en test de 0.7443 :(
+
+\subsection{\texttt{p3\_17}}
+
+Pasamos ahora a probar otro algoritmo. Sabemos que Lightgbm tiene la ventaja de ser muy eficiente, pero no es el más potente, así, probaremos con XGBoost, a ver si obtiene resultados similares o incluso mejores. Utilizamos el preprocesado anterior.
+
+En primer lugar nos encontramos con un error inesperado. El algoritmo trata de usar la GPU y por algún motivo no puede. Para solucionarlo añadimos los parámetros \texttt{predictor = cpu\_predictor} y \texttt{n\_gpus = 0}.
+
+% https://xgboost.readthedocs.io/en/latest/parameter.html
+Ejecutamos el algoritmo con la siguiente configuración de parámetros: {\ttfamily predictor = 'cpu\_predictor', n\_gpus = 0, n\_estimators = 200, eta = 0.3, max\_depth = 6, scale\_pos\_weight = 1}. Con un tiempo que ronda los 300 segundos por iteración, conseguimos un resultado de 0.7308 en entrenamiento.
+
+Probamos a tratar el imbalanceo de las clases. Por un lado, variando el parámetro \texttt{scale\_pos\_weight}, pruebo a darle el valor 0.5 y 1 pero no afecta a los resultados. utilizando el parámetro \texttt{max\_delta\_step} que vemos que afecta al desbalanceo de clases. Ejecutamos el algoritmo con los parámetros: {\ttfamily predictor = 'cpu\_predictor', n\_gpus = 0, n\_estimators = 200, eta = 0.3, max\_depth = 6, max\_delta\_step = 7}. El tiempo por ejecución oscila entre 296 segundos y 319. El resultado en training exactamente igual que cuando no estaba este parámetro.
+
+Probamos a aumentar un poco el resto de parámetros, disminuyendo el valor \texttt{eta} para evitar el sobreajuste y aumentamos el número de estimadores y la profundidad máxima. {\ttfamily n\_estimators = 400, eta = 0.1, max\_depth = 8}. Conseguimos una puntuación en entremaiento de 0.7913 que se tradujo en 0.7425 en test.
+
+\subsection{\texttt{p3\_18}}
+
+Pruebo a aumentar todavía más los parámetros: {\ttfamily n\_estimators = 700, eta = 0.1, max\_depth = 10}. El resultado obtenido en entrenamiento es de 0.8691 y en test de 0.7457. El aumento en el número de estimadores y profundidad, provocó una mejora en los resultados.
 
 %% \subsection{\texttt{p3\_}}
 
