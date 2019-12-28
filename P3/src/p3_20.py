@@ -122,7 +122,7 @@ estimators = [
     ('lgbm', lgb.LGBMClassifier(objective='regression_l1', n_estimators=1000, num_leaves = 80, scale_pos_weight = 0.05)),
     ('xgboost', xgb.XGBClassifier(predictor='cpu_predictor', n_gpus=0, n_estimators = 700, eta = 0.1, max_depth = 10, verbose=2))]
 
-stacking = StackingClassifier(estimators = estimators, final_estimator = LogisticRegression(), n_jobs = -1, cv = 5)
+stacking = StackingClassifier(estimators = estimators, final_estimator = LogisticRegression(), n_jobs = -1, cv = 5, verbose = 2)
 
 
 # Entreno de nuevo con el total de los datos
