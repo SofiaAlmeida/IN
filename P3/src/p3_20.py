@@ -116,16 +116,13 @@ y = np.ravel(data_y.values)
 
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=123456)
     
-print("------ Stacking...")
+print("------ Stacking..")
 
 estimators = [
-    ('lgbm', lgb.LGBMClassifier(objective='regression_l1', n_estimators=1000, n_jobs=-1, num_leaves = 80, scale_pos_weight = 0.05)),
-    ('rf', RandomForestClassifier(n_jobs=-1, random_state = 123456, max_depth = 40, n_estimators = 500)),
-    ('xgboost', xgb.XGBClassifier(predictor='cpu_predictor', n_gpus=0, n_estimators = 400, eta = 0.1, max_depth = 8, verbose=2))]
+    ('lgbm', lgb.LGBMClassifier(objective='regression_l1', n_estimators=1000, num_leaves = 80, scale_pos_weight = 0.05)),
+    ('xgboost', xgb.XGBClassifier(predictor='cpu_predictor', n_gpus=0, n_estimators = 700, eta = 0.1, max_depth = 10, verbose=2))]
 
 stacking = StackingClassifier(estimators = estimators, final_estimator = LogisticRegression(), n_jobs = -1, cv = 5)
-
-#stacking, y_test_stacking = validacion_cruzada(stacking, X, y, skf)
 
 
 # Entreno de nuevo con el total de los datos
@@ -136,7 +133,7 @@ clf = clf.fit(X,y)
 tiempo = time.time() - t
 #plotImp(clf, selec, X.shape[1])
 y_pred_tra = clf.predict(X)
-print("F1 score (tst): {:.4f}, tiempo: {:6.2f} segundos".format(f1_score(y, y_pred_tra, average='micro') , tiempo))
+print("F1 score (tst): {:.4f}, tiempo: {:6.2f} segundos".format(f1_score(y,y_pred_tra,average='micro'), tiempo))
 
 y_pred_tst = clf.predict(X_tst)
 
