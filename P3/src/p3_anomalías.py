@@ -75,18 +75,12 @@ Se convierten las variables categóricas a variables numéricas (ordinales)
 '''
     print("----- Preprocessing...")
 
-    mask = data_x.isnull()
-    data_x_tmp = data_x.fillna(9999)
-    data_x_tmp = data_x_tmp.astype(str).apply(LabelEncoder().fit_transform)
-    data_x_nan = data_x_tmp.where(~mask, data_x)
-
-    mask = data_x_tst.isnull() #máscara para luego recuperar los NaN
-    data_x_tmp = data_x_tst.fillna(9999) #LabelEncoder no funciona con NaN, se asigna un valor no usado
-    data_x_tmp = data_x_tmp.astype(str).apply(LabelEncoder().fit_transform) #se convierten categóricas en numéricas
-    data_x_tst_nan = data_x_tmp.where(~mask, data_x_tst) #se recuperan los NaN
-
-    X = data_x_nan
-    X_tst = data_x_tst_nan
+    
+    print("Nº variables inicial: " + str(len(data_x.columns)))
+    data_x_tmp = pd.get_dummies(data=data_x, columns=['land_surface_condition', 'foundation_type',  'roof_type', 'ground_floor_type', 'other_floor_type', 'position', 'plan_configuration', 'legal_ownership_status'])
+    print("Nº variables tras get_dummies: " + str(len(data_x_tmp.columns)))
+    
+    X = data_x_tmp
     
     print("Nº instancias inicial: " + str(X.shape[0]))
     scaler = MinMaxScaler(feature_range = (0, 1))
@@ -120,9 +114,6 @@ Se convierten las variables categóricas a variables numéricas (ordinales)
     X = scaler.inverse_transform(X)
     print('Nº instancias final: ', X.shape[0])
         
-    print("Nº variables inicial: " + str(len(data_x.columns)))
-    data_x_tmp = pd.get_dummies(data=data_x, columns=['land_surface_condition', 'foundation_type',  'roof_type', 'ground_floor_type', 'other_floor_type', 'position', 'plan_configuration', 'legal_ownership_status'])
-    print("Nº variables tras get_dummies: " + str(len(data_x_tmp.columns)))
     # sel = VarianceThreshold(threshold=(.95 * (1 - .95)))
     # X = sel.fit_transform(data_x_tmp)
     # print("Seleccionadas:")
@@ -133,7 +124,7 @@ Se convierten las variables categóricas a variables numéricas (ordinales)
     # print(selec)
     # print("Nº variables final: " + str(X.shape[1]))
     
-    data_x_tmp = pd.get_dummies(data=X_tst, columns=['land_surface_condition', 'foundation_type',  'roof_type', 'ground_floor_type', 'other_floor_type', 'position', 'plan_configuration', 'legal_ownership_status'])
+    X_tst = pd.get_dummies(data=data_x_tst, columns=['land_surface_condition', 'foundation_type',  'roof_type', 'ground_floor_type', 'other_floor_type', 'position', 'plan_configuration', 'legal_ownership_status'])
     # X_tst = sel.fit_transform(data_x_tmp) 
     return X, X_tst, y
 #------------------------------------------------------------------
