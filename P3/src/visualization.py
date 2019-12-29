@@ -18,6 +18,8 @@ import time
 from sklearn import preprocessing
 import matplotlib.pyplot as plt # plotting
 import seaborn as sns
+from sklearn.manifold import TSNE
+from sklearn.preprocessing import LabelEncoder
 
 # Distribution graphs (histogram/bar graph) of column data
 def plotPerColumnDistribution(df, nGraphShown, nGraphPerRow):
@@ -148,8 +150,52 @@ def relation_geo_level():
    .add_legend()
     plt.title("geo_level_3_id")
     plt.savefig("../fig/geo_level_3_2.png")
-        
-#------------------------------------------------------------------
+
+'''Visualización con TSNE'''
+def tsne2d():
+    # Se numerizan los datos
+    mask = data_x.isnull()
+    data_x_tmp = data_x.fillna(9999)
+    data_x_tmp = data_x_tmp.astype(str).apply(LabelEncoder().fit_transform)
+    data_x_nan = data_x_tmp.where(~mask, data_x)
+
+    X = data_x_nan
+    y = np.ravel(data_y.values)
+
+    print("----- TSNE ...")
+    tsne = TSNE(n_components = 2, random_state=123456, verbose = 2)
+    target_ids = [1,2,3]
+    X_2d = tsne.fit_transform(X)
+    plt.figure(figsize=(6, 5))
+    sns.set()
+    colors = 'r', 'g', 'b', 'c', 'm', 'y', 'k', 'w', 'orange', 'purple'
+    for i, c, label in zip(target_ids, colors, [1, 2, 3]):
+        plt.scatter(X_2d[y == i, 0], X_2d[y == i, 1], c=c, label=label)
+    plt.legend()
+    plt.savefig("../fig/tsne_visualization_2d.png")
+
+def tsne3d():
+     # Se numerizan los datos
+    mask = data_x.isnull()
+    data_x_tmp = data_x.fillna(9999)
+    data_x_tmp = data_x_tmp.astype(str).apply(LabelEncoder().fit_transform)
+    data_x_nan = data_x_tmp.where(~mask, data_x)
+
+    X = data_x_nan
+    y = np.ravel(data_y.values)
+
+    print("----- TSNE ...")
+    tsne = TSNE(n_components = 3, random_state=123456, verbose = 2)
+    target_ids = [1,2,3]
+    X_3d = tsne.fit_transform(X)
+    plt.figure(figsize=(6, 5))
+    sns.set()
+    colors = 'r', 'g', 'b', 'c', 'm', 'y', 'k', 'w', 'orange', 'purple'
+    for i, c, label in zip(target_ids, colors, [1, 2, 3]):
+        plt.scatter(X_3d[y == i, 0], X_3d[y == i, 1], X_3d[y == i, 2], c=c, label=label)
+    plt.legend()
+    plt.savefig("../fig/tsne_visualization_3d.png")
+    #------------------------------------------------------------------
 #------------------------------------------------------------------
 #------------------------------------------------------------------
 '''
@@ -176,5 +222,6 @@ data_y.drop(labels=['building_id'], axis=1,inplace = True)
 #scatter_matrix(data_x, data_y, ['count_floors_pre_eq', 'age', 'area_percentage', 'height_percentage', 'position'], "1")
 #plotCorrelationMatrix(data_x, 12)
 #print(data_x.describe().T.style.background_gradient(cmap='Set2',low =0.4,high=0.1,axis=0))
-relation_geo_level()
-
+#relation_geo_level()
+#tsne2d()
+tsne3d()
