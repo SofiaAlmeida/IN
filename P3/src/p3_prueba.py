@@ -109,10 +109,10 @@ skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=123456)
 print("------ Stacking..")
 
 estimators = [
-    ('lgbm', lgb.LGBMClassifier(objective='regression_l1', n_estimators=1000, num_leaves = 90, scale_pos_weight = 0.05)),
-    ('xgboost', xgb.XGBClassifier(predictor='cpu_predictor', n_gpus=0, n_estimators = 900, eta = 0.1, max_depth = 15, verbose=2))]
+    ('lgbm', lgb.LGBMClassifier(objective='regression_l1', n_estimators=1000, num_leaves = 90, scale_pos_weight = 0.05, n_jobs = -1, verbose = 2)),
+    ('xgboost', xgb.XGBClassifier(predictor='cpu_predictor', n_gpus=0, n_estimators = 900, eta = 0.1, max_depth = 15, verbose=2, n_jobs = -1))]
 
-stacking = StackingClassifier(estimators = estimators, final_estimator = LogisticRegression(), n_jobs = -1, cv = 5, verbose = 2)
+stacking = StackingClassifier(estimators = estimators, final_estimator = LogisticRegression(), cv = 5, verbose = 2)
 
 
 # Entreno de nuevo con el total de los datos
