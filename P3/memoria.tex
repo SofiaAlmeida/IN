@@ -92,6 +92,7 @@
 \newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 \newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 \newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\usepackage{colortbl}
 
 % Enlaces y colores
 \usepackage{hyperref}
@@ -208,49 +209,86 @@ Subtítulo} % Subtitle
 %      - Centrar
 %      - Dividir filas (con una línea más clarita o coloreando fila sí, fila no)
 %      - Poner fecha en el mismo formato
+
+\setlength\LTleft{-0.5in}
+\setlength\LTright{-0.5in}
 \begin{longtable}{lL{2cm}lllL{3cm}L{2.5cm}L{3.5cm}}
 \caption{Pruebas realizadas}
 \label{tab:pruebas}\\
 \toprule
 ID & Fecha-hora & Pos. & Sc.-Training & Sc.-Test & Preprocesado & Algoritmos & Parámetros\\
 \midrule
-00 & 5/12/2019 10:07:58 UTC & 315 & 0.7264 & 0.6883 & - & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2}\\
-\midrule
-01 & 19/12/2019 11:18:10 UTC & 356 & 0.7358 & 0.6874 & - & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, feature\_fraction = 0.5, learning\_rate = 0.1, num\_leaves = 50}\\
+00 & 5/12/2019 10:07:58 UTC & 315 & 0.7264 & 0.6883 &  & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2}\\
+\arrayrulecolor{black!10}\midrule
 
-02 & 22/12/2019 17:32:55 UTC & 360 & 0.7294 & 0.6894 & - & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 35, scale\_pos\_weight = 0.1}\\
+01 & 19/12/2019 11:18:10 UTC & 356 & 0.7358 & 0.6874 &  & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, feature\_fraction = 0.5, learning\_rate = 0.1, num\_leaves = 50}\\
+\arrayrulecolor{black!10}\midrule
+
+02 & 22/12/2019 17:32:55 UTC & 360 & 0.7294 & 0.6894 &  & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 35, scale\_pos\_weight = 0.1}\\
+\arrayrulecolor{black!10}\midrule
 
 03 & 22/12/2019 20:39:08 UTC & 243 & 0.7339 & 0.7227 & \texttt{get\_dummies} para todas las variables categóricas & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 40, scale\_pos\_weight = 0.1}\\
+\arrayrulecolor{black!10}\midrule
 
 04 & 23/12/2019 17:14:45 UTC & 242 & 0.7342 & 0.7245 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 40, scale\_pos\_weight = 0.1}\\
+\arrayrulecolor{black!10}\midrule
 
 05 & 23/12/2019 18:58:58 UTC & 242 & 0.7335 & 0.7228 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{SelectKBest}, $k =35$ & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 40, scale\_pos\_weight = 0.1}\\
+\arrayrulecolor{black!10}\midrule
 
 06 & 23/12/2019 21:29:30 UTC & 234 & 0.7375 & 0.7253 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 45, scale\_pos\_weight = 0.1}\\
+\arrayrulecolor{black!10}\midrule
 
 07 & 24/12/2019 10:11:57 UTC & 237 & 0.8486 & 0.7167 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.9 & RandomForest & {\ttfamily n\_jobs = -1, max\_depth = 20, n\_estimators = 300}\\
+\arrayrulecolor{black!10}\midrule
 
 08 & 24/12/2019 10:45:07 UTC & 237 & 0.8468 & 0.6969 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.9 & RandomForest & {\ttfamily class\_weight = 'balanced', max\_depth = 20, max\_features = 'sqrt', n\_estimators = 300}\\
+\arrayrulecolor{black!10}\midrule
 
 09 & 24/12/2019 11:55:27 UTC & 237 & 0.9825 & 0.7177 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & RandomForest & {\ttfamily max\_depth = 40, max\_features = 'sqrt', n\_estimators = 500}\\
+\arrayrulecolor{black!10}\midrule
 
 10 & 2019/12/25 11:42:49 UTC & 239 & 0.7375 & 0.6823 & \texttt{OneHotencoder} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 45, scale\_pos\_weight = 0.1}\\
+\arrayrulecolor{black!10}\midrule
 
 11 & 2019/12/25 12:40:41 UTC & 160 & 0.7693 & 0.7388 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 500, n\_jobs = -1, num\_leaves = 55, scale\_pos\_weight = 0.1}\\
+\arrayrulecolor{black!10}\midrule
 
 12 & 2019/12/25 12:52:50 UTC & 148 & 0.7855 & 0.7412 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 700, n\_jobs = -1, num\_leaves = 60, scale\_pos\_weight = 0.1}\\
+\arrayrulecolor{black!10}\midrule
 
 13 & 2019/12/26 15:35:06 UTC & 117 & 0.8070 & 0.7444 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 1000, n\_jobs = -1, num\_leaves = 65, scale\_pos\_weight = 0.1}\\
+\arrayrulecolor{black!10}\midrule
 
 14 & 2019/12/26 16:34:32 UTC & 107 & 0.8184 & 0.7452 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 1000, n\_jobs = -1, num\_leaves = 80, scale\_pos\_weight = 0.05}\\
+\arrayrulecolor{black!10}\midrule
 
 15 & 2019/12/26 18:24:17 UTC & 107 & 0.8259 & 0.7448 &\texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 1000, n\_jobs = -1, num\_leaves = 90, scale\_pos\_weight = 0.05}\\
+\arrayrulecolor{black!10}\midrule
 
 16 & 27/12/2019 12:29:53 UTC & 110 & 0.8061 & 0.7443 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 900, n\_jobs = -1, num\_leaves = 70, scale\_pos\_weight = 0.05}\\
+\arrayrulecolor{black!10}\midrule
 
 17 & 27/12/2019 17:40:36 UTC & 110 & 0.7913 & 0.7425  & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & XGBoost & {\ttfamily predictor = 'cpu\_predictor', n\_gpus = 0, n\_estimators = 200, eta = 0.3, max\_depth = 6, max\_delta\_step = 7}\\
+\arrayrulecolor{black!10}\midrule
 
-18 & 27/12/2019 19:01:06 UTC & 98 & 0.8691 & 0.7425 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & XGBoost{\ttfamily n\_estimators = 700, eta = 0.1, max\_depth = 10}\\
+18 & 27/12/2019 19:01:06 UTC & 98 & 0.8691 & 0.7457 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & XGBoost & {\ttfamily n\_estimators = 700, eta = 0.1, max\_depth = 10}\\
+\arrayrulecolor{black!10}\midrule
+
+19 & 28/12/2019 20:20:03 UTC & 104 & 0.7862 & 0.7416 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & StackingClassifier (Lightgbm, RandomForest, XGBoost) & Lightgbm: {\ttfamily objective = 'regression\_l1', n\_estimators = 700, n\_jobs = -1, num\_leaves = 65, scale\_pos\_weight = 0.05}. RandomForest: {\ttfamily n\_jobs = -1, random\_state = 123456, max\_depth = 20, n\_estimators = 200}. XGBoost: {\ttfamily n\_estimators = 400, eta = 0.1, max\_depth = 6}\\
+\arrayrulecolor{black!10}\midrule
+
+20 & 28/12/2019 22:04:41 UTC & 91 & 0.8436 & 0.7468 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & StackingClassifier (Lightgbm, XGBoost) & Lightgbm: {\ttfamily objective = 'regression\_l1', n\_estimators = 1000, n\_jobs = -1, num\_leaves = 80, scale\_pos\_weight = 0.05}. XGBoost: {\ttfamily n\_estimators = 700, eta = 0.1, max\_depth = 10}\\
+\arrayrulecolor{black!10}\midrule
+
+21 & 29/12/2019 16:21:24 UTC & 92 & 0.8427 & 0.7469 & \texttt{get\_dummies} para todas las variables categóricas. Selección de variables con \texttt{VarianceThreshold}, umbral 0.95 & StackingClassifier (Lightgbm, RandomForest, XGBoost) & Lightgbm: {\ttfamily objective = 'regression\_l1', n\_estimators = 1000, num\_leaves = 80, scale\_pos\_weight = 0.05}. RandomForest: {\ttfamily random\_state = 123456, max\_depth = 20, n\_estimators = 300}. XGBoost: {\ttfamily n\_estimators = 700, eta = 0.1, max\_depth = 10}\\
+
+22 & 29/12/2019 22:22:43 UTC & 93 & 0.7387 & 0.7240 & \texttt{get\_dummies} para todas las variables categóricas. \texttt{Isolation Forest} con \texttt{outliers\_fraction = 0.05} para eliminar anomalías & Lightgbm & {\ttfamily objective = 'regression\_l1', n\_estimators = 200, n\_jobs = 2, num\_leaves = 45, scale\_pos\_weight = 0.1}\\
+\arrayrulecolor{black!10}\midrule
+
+23 & 29/12/2019 22:24:07 UTC & 58 & 0.8421 & 0.7482 & \texttt{get\_dummies} para todas las variables categóricas & StackingClassifier (Lightgbm, XGBoost) & Lightgbm: {\ttfamily objective = 'regression\_l1', n\_estimators = 1000, n\_jobs = -1, num\_leaves = 80, scale\_pos\_weight = 0.05}. XGBoost: {\ttfamily n\_estimators = 700, eta = 0.1, max\_depth = 10}\\
+\arrayrulecolor{black!10}\midrule
+\arrayrulecolor{black}
 \bottomrule
 \end{longtable}
 \newpage
@@ -566,7 +604,80 @@ Probamos a aumentar un poco el resto de parámetros, disminuyendo el valor \text
 
 \subsection{\texttt{p3\_18}}
 
-Pruebo a aumentar todavía más los parámetros: {\ttfamily n\_estimators = 700, eta = 0.1, max\_depth = 10}. El resultado obtenido en entrenamiento es de 0.8691 y en test de 0.7457. El aumento en el número de estimadores y profundidad, provocó una mejora en los resultados.
+Probamos a aumentar todavía más los parámetros: {\ttfamily n\_estimators = 700, eta = 0.1, max\_depth = 10}. El resultado obtenido en entrenamiento es de 0.8691 y en test de 0.7457. El aumento en el número de estimadores y profundidad, provocó una mejora en los resultados.
+
+
+\subsection{\texttt{p3\_19} - Stacking}
+% https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.StackingClassifier.html
+
+Ahora que ya hemos probado varios algoritmos es el momento de utilizar el algoritmo recomendado por los profesores de la asignatura \textit{stacking}, que consiste en utilizar varios clasificadores para mejorar la clasificación final.
+
+En primer lugar, probaremos los 3 algoritmos con los parámetros que mejores resultados dieron. Tras obtener varias veces problemas de memoria, tenemos que ir disminuyendo los parámetros de los algoritmos hasta conseguir ejecutarlos. Con una advertencia sobre la convergencia, consigue un resultado en entrenamiento de 0.7862 tras 984 segundos de ejecución (unos 16 minutos). Esto se tradujo en un resultado en test de 0.7416.
+  
+\subsection{\texttt{p3\_20} - Stacking}
+
+Probamos ahora a quitar el clasificador RandomForest, ya que consiguió unos resultados ligeramente inferiores a los de XGBoost y Lightgbm en las pruebas de los clasificadores por separado.
+
+En esta ocasión, sí que pudimos mantener los parámetros que dieron mejores resultados de ambos clasificadores. En un tiempo cercano a una hora conseguimos un resultado en entrenamiento de 0.8436 que se convirtió en 0.7468 en test.
+
+Pruebo a ejecutar el mismo algoritmo eliminando la selección de variables, el resultado en training es de 0.8421, en un tiempo de 14452.72 segundos (cuatro horas). (p3\_stacking\_3 -> submission\_s3)
+Da una puntuación menor en training a pesar de haber estado entrenando durante mucho más rato. Por lo pronto no subiré estos resultados.
+
+\subsection{\texttt{p3\_21}}
+
+Conseguimos evitar los errores de memoria eliminando los parámetros \texttt{n\_jobs} (siguiendo el consejo de un compañero). Así, podemos probar el Stacking con los tres algoritmos en los parámetros que mejor resultado dieron. En un tiempo de 2967 segundos (50 minutos), consiguió un resultado en training de 0.8427 (ligeramente menor que sin RandomForest). Al subir el submission correspondiente obtenemos una puntuación de 0.7469 (0.0001 más que sin RandomForest).
+
+\subsection{\texttt{sampling}}
+
+Probamos a realizar un muestreo aleatorio, a ver si disminuyen los tiempos de ejecución y mejoran los resultados. Partimos del archivo \texttt{p3\_6.py} eliminando la selección de variables. Archivo \texttt{p3\_sampling.py}.
+
+Seleccionando 3/4 de las variables, 195450 instancias, los tiempos de ejecución son de 14-18 segundos por partición y obtenemos un resultado en trainig de 0.7388 (una pequeña mejora respecto al 0.7375 de partida).
+
+Añadiendo la selección de características, los tiempos son de entre 11-13 segundos por partición. El resultado en training del total de instancias es de 0.7397, que mejora un poco el resultado inicial.
+
+El muestreo podría resultar más interesante en los algoritmos más lentos. Sin embargo, un muestreo aleatorio puede no ser de mucho interés, ya que muchos algoritmos funcionan mejor con mayor cantidad de instancias (aunque tarden más de lo que nos gustaría), convendría quitar aquellas que por algún motivo estén generando algún tipo de ruido y empeorando el modelo.
+
+% Pasar a pruebas fallidas
+%https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
+Antes de atacar el problema del ruido, descubro la existencia de TSNE una herramienta de scikit-learn para reducir la dimensionalidad y poder visualizar los datos. Añadimos las líneas necesarias a \texttt{visualization.py} para obtener la representación correspondiente en dos dimensios. En la Figura \ref{fig:tsne2} vemos dicha representación.
+%https://scipy-lectures.org/packages/scikit-learn/auto_examples/plot_tsne.html
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.9\textwidth, width=1.0\textwidth]{tsne_visualization_2d}
+    \caption{Visualización de los datos usando TSNE en 2 dimensiones.}
+    \label{fig:tsne2d}
+\end{figure}
+
+Como no podemos obtener ninguna conclusión sobre la representación en dos dimensiones, probamos a dibujarla en tres dimensiones.
+
+\subsubsection{\texttt{p3\_22} - Detección de anomalías con PyOD}
+
+Se considera una anomalía a quel punto que difiere demasiado del resto de observaciones del conjunto. Detectarlas y eliminarlas puede producir mejores resultados, ya que generaremos un modelo que no trate de adecuarse a estas (eliminar las anomalías no siempre resulta en mejores resultados, puede que haya puntos diferentes en el conjunto y debamos adaptarnos a ellos).
+
+%https://www.analyticsvidhya.com/blog/2019/02/outlier-detection-python-pyod/
+Utilizaremos PyOD para detectarlas. En particular el clasificador, \texttt{Isolation Forest}, pues tiene un buen rendimiento en datos multidimensionales. En el archivo \texttt{p3\_anomalías.py} está la adaptación del archivo \texttt{p3\_06.py} en el que se cambia la selección de variables y binarización de variables categóricas por la eliminación de anomalías. Tras seleccionar 247571 instancias (13030 anomalías). El resultado en training es de 0.7392 (ligeramente superior al 0.7375) con tiempos de ejecución entre 17 y 20 segundos por partición.
+% TODO: quitar en p3_anomalias.py el get_dummies
+
+Añadimos la binarización de las variables categóricas antes de la eliminación de anomalías, pues antes de aplicar la binarización, en las primeras pruebas con Lightgbm, conseguimos resultados del orden de 0.73 en training que en test luego no llegaron a superar el 0.7. Añadiendo el código correspondiente, actualizado en el archivo \texttt{p3\_22.py} pasamos a probarlo. Con unos tiempos de 20 segundos por partición, el resultado en training es de 0.7387, se tradujo en un f1-score en test de 0.7240 (que tenemos que comparar con 0.7253), un ligero empeoramiento.
+
+\subsection{\texttt{p3\_23}}
+
+Para no desperdiciar la última prueba del día, subiré los resultados comentados en la subsección %TODO: REF subsección.
+
+Son los resultados de un stacking de XGBoost y LightGBM eliminando la selección de variables. Esto da un resultado en training de 0.8421 y en test de 0.7482. Aunque la selección de variables quitara bastante tiempo de ejecución, los resultados en test se ven favorecidos, dando la puntuación más alta hasta el momento.
+
+\subsection{\texttt{p3\_24}}
+
+Viendo que sin selección de variables los resultados del Stacking son ligeramente mejores, decidimos probar también el Stacking con RandonForest. 
+
+\subsection{}
+
+Probamos este preprocesado con el Stacking de Lightgbm y XGBoost. Partimos del archivo \texttt{p3\_20.py} y cambiamos el preprocesado al recién probado en \texttt{p3\_anomalías.py}.  -> error (correo)
+
+\subsection{}
+
+En el archivo \texttt{p3\_anomalías\_sel.py} al preprocesado con \texttt{get\_dummies} y reducción de anomalías, añadimos la selección de características (a partir del Ligthgbm básico del archivo \texttt{p3\_06.py}. Esta vez, tras la selección de variables se queda con 30 de ellas. El resultado en training es de 
 
 %% \subsection{\texttt{p3\_}}
 
@@ -602,7 +713,7 @@ Partiendo del código proporcionado por el profesor de prácticas utilizaremos u
 Tarda del orden de 2700 segundos y me da un error :/ mala idea un random forest con tantas variables.
 
 % TODO:
-% - Pasar a textit: script, test, training, boosting
+% - Pasar a textit: script, test, training, boosting, stacking (?)
 % TODO:
 % - Referenciar referencias...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
